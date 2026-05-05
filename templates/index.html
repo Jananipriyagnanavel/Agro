@@ -6,9 +6,6 @@
 <title>AgroSense — AI Crop Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════
-   ROOT & RESET
-══════════════════════════════════════════ */
 :root{
   --dark-green:#1b3a1e;--forest:#2d5a27;--olive:#4a5e2a;
   --mid:#4a7c40;--leaf:#6aab5e;--light:#8dc87f;--sage:#b2c9a0;
@@ -21,31 +18,17 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-dark);overflow-x:hidden;}
-
-/* ══════════════════════════════════════════
-   SCREEN SYSTEM
-══════════════════════════════════════════ */
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;}
 #dashScreen{display:none;flex-direction:column;}
 #dashScreen.active{display:flex;}
-
 @keyframes screenIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .screen-enter{animation:screenIn 0.55s cubic-bezier(0.16,1,0.3,1) both;}
-
-/* ══════════════════════════════════════════
-   SHARED FLOATING CANVAS
-══════════════════════════════════════════ */
 #globalCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
 .f-elem{position:absolute;user-select:none;pointer-events:none;animation:floatUp linear infinite;opacity:0;}
-@keyframes floatUp{
-  0%  {opacity:0;transform:translateY(0) rotate(0deg) scale(0.6);}
-  8%  {opacity:0.75;}92%{opacity:0.45;}
-  100%{opacity:0;transform:translateY(-110vh) rotate(360deg) scale(1.1);}
-}
+@keyframes floatUp{0%{opacity:0;transform:translateY(0) rotate(0deg) scale(0.6);}8%{opacity:0.75;}92%{opacity:0.45;}100%{opacity:0;transform:translateY(-110vh) rotate(360deg) scale(1.1);}}
 .f-pollen{border-radius:50%;animation:floatUp linear infinite,wobble ease-in-out infinite alternate;}
 @keyframes wobble{from{margin-left:-6px}to{margin-left:6px}}
-
 .bg-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
 .bg-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.3;animation:blobDrift 20s ease-in-out infinite alternate;}
 .bg-blob:nth-child(1){width:600px;height:600px;background:radial-gradient(circle,#6aab5e,transparent);top:-100px;left:-150px;animation-duration:18s;}
@@ -53,60 +36,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .bg-blob:nth-child(3){width:350px;height:350px;background:radial-gradient(circle,#c9a84c,transparent);top:40%;left:60%;animation-duration:25s;animation-delay:-4s;opacity:0.15;}
 @keyframes blobDrift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(40px,30px) scale(1.1);}}
 
-/* ══════════════════════════════════════════
-   ██  LIVE PRICE TICKER STRIP
-══════════════════════════════════════════ */
-#priceTicker{
-  position:sticky;top:0;z-index:200;
-  background:linear-gradient(90deg,#0d2010 0%,#162e18 40%,#0d2010 100%);
-  border-bottom:1px solid rgba(106,171,94,0.25);
-  overflow:hidden;
-  height:38px;
-  display:none; /* shown on dash */
-  align-items:center;
-}
+/* ── TICKER ── */
+#priceTicker{position:sticky;top:0;z-index:200;background:linear-gradient(90deg,#0d2010 0%,#162e18 40%,#0d2010 100%);border-bottom:1px solid rgba(106,171,94,0.25);overflow:hidden;height:38px;display:none;align-items:center;}
 #priceTicker.visible{display:flex;}
-
-.ticker-label{
-  flex-shrink:0;
-  display:flex;align-items:center;gap:7px;
-  padding:0 16px;
-  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  color:var(--leaf);
-  border-right:1px solid rgba(106,171,94,0.2);
-  height:100%;
-  background:linear-gradient(90deg,#0a1c0c,#0d2010);
-  white-space:nowrap;
-}
-.ticker-label .dot{
-  width:6px;height:6px;border-radius:50%;background:var(--up);
-  box-shadow:0 0 6px var(--up);
-  animation:tickPulse 1.5s ease-in-out infinite;
-}
+.ticker-label{flex-shrink:0;display:flex;align-items:center;gap:7px;padding:0 16px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--leaf);border-right:1px solid rgba(106,171,94,0.2);height:100%;background:linear-gradient(90deg,#0a1c0c,#0d2010);white-space:nowrap;}
+.ticker-label .dot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 6px var(--up);animation:tickPulse 1.5s ease-in-out infinite;}
 @keyframes tickPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.6);}}
-
-.ticker-track{
-  flex:1;overflow:hidden;position:relative;height:100%;
-  mask-image:linear-gradient(90deg,transparent 0%,#000 4%,#000 96%,transparent 100%);
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 4%,#000 96%,transparent 100%);
-}
-.ticker-inner{
-  display:flex;align-items:center;height:100%;
-  animation:tickScroll 55s linear infinite;
-  white-space:nowrap;
-  will-change:transform;
-}
+.ticker-track{flex:1;overflow:hidden;position:relative;height:100%;mask-image:linear-gradient(90deg,transparent 0%,#000 4%,#000 96%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 4%,#000 96%,transparent 100%);}
+.ticker-inner{display:flex;align-items:center;height:100%;animation:tickScroll 55s linear infinite;white-space:nowrap;will-change:transform;}
 .ticker-inner:hover{animation-play-state:paused;}
 @keyframes tickScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
-
-.t-item{
-  display:inline-flex;align-items:center;gap:9px;
-  padding:0 22px;
-  border-right:1px solid rgba(106,171,94,0.1);
-  height:100%;
-  cursor:default;
-  transition:background 0.2s;
-}
+.t-item{display:inline-flex;align-items:center;gap:9px;padding:0 22px;border-right:1px solid rgba(106,171,94,0.1);height:100%;cursor:default;transition:background 0.2s;}
 .t-item:hover{background:rgba(106,171,94,0.07);}
 .t-crop{font-size:11px;font-weight:600;color:rgba(255,255,255,0.75);letter-spacing:0.3px;white-space:nowrap;}
 .t-price{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:#fff;}
@@ -116,23 +56,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .t-change.dn{color:var(--down);background:rgba(239,68,68,0.12);}
 .t-change.fl{color:var(--neutral);background:rgba(245,158,11,0.12);}
 .t-arrow{font-size:9px;line-height:1;}
-.t-sparkline{width:42px;height:18px;}
-
-/* mini charts inside ticker */
 .spark-canvas{display:block;}
-
-/* ══════════════════════════════════════════
-   PRICE PANEL — expanded detail card
-══════════════════════════════════════════ */
-.price-panel{
-  position:relative;z-index:1;
-  background:linear-gradient(135deg,rgba(13,32,16,0.97),rgba(22,46,24,0.97));
-  border-bottom:1px solid rgba(106,171,94,0.18);
-  overflow:hidden;
-  max-height:0;
-  transition:max-height 0.55s cubic-bezier(0.16,1,0.3,1),padding 0.4s ease;
-  backdrop-filter:blur(20px);
-}
+.price-panel{position:relative;z-index:1;background:linear-gradient(135deg,rgba(13,32,16,0.97),rgba(22,46,24,0.97));border-bottom:1px solid rgba(106,171,94,0.18);overflow:hidden;max-height:0;transition:max-height 0.55s cubic-bezier(0.16,1,0.3,1),padding 0.4s ease;backdrop-filter:blur(20px);}
 .price-panel.open{max-height:320px;padding:20px 36px 22px;}
 .price-panel-inner{max-width:1100px;margin:0 auto;}
 .pp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
@@ -140,16 +65,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .pp-sub{font-size:11px;color:rgba(255,255,255,0.38);margin-top:1px;}
 .pp-close{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:4px 11px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
 .pp-close:hover{background:rgba(255,255,255,0.12);color:#fff;}
-
 .pp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
-.pp-card{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(106,171,94,0.15);
-  border-radius:12px;padding:12px 14px;
-  display:flex;flex-direction:column;gap:4px;
-  transition:background 0.2s,border-color 0.2s,transform 0.2s;
-  cursor:default;
-}
+.pp-card{background:rgba(255,255,255,0.04);border:1px solid rgba(106,171,94,0.15);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;transition:background 0.2s,border-color 0.2s,transform 0.2s;cursor:default;}
 .pp-card:hover{background:rgba(106,171,94,0.08);border-color:rgba(106,171,94,0.35);transform:translateY(-2px);}
 .pp-card-top{display:flex;align-items:center;justify-content:space-between;}
 .pp-crop{font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);}
@@ -164,61 +81,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .pp-bar{height:3px;border-radius:10px;background:rgba(255,255,255,0.07);overflow:hidden;margin-top:4px;}
 .pp-bar-fill{height:100%;border-radius:10px;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);}
 .pp-range{display:flex;justify-content:space-between;font-size:9px;color:rgba(255,255,255,0.25);margin-top:1px;}
-
-.pp-toggle-btn{
-  display:none;
-  align-items:center;gap:6px;
-  padding:4px 12px;
-  background:rgba(106,171,94,0.1);
-  border:1px solid rgba(106,171,94,0.25);
-  border-radius:20px;
-  font-size:11px;font-weight:600;
-  color:var(--leaf);
-  cursor:pointer;
-  font-family:'DM Sans',sans-serif;
-  transition:all 0.2s;
-  white-space:nowrap;
-}
+.pp-toggle-btn{display:none;align-items:center;gap:6px;padding:4px 12px;background:rgba(106,171,94,0.1);border:1px solid rgba(106,171,94,0.25);border-radius:20px;font-size:11px;font-weight:600;color:var(--leaf);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap;}
 .pp-toggle-btn:hover{background:rgba(106,171,94,0.2);}
 .pp-toggle-btn.shown{display:flex;}
-
-/* last-updated badge */
-.live-badge{
-  flex-shrink:0;
-  display:flex;align-items:center;gap:5px;
-  padding:0 14px;
-  font-size:9px;font-weight:600;letter-spacing:1px;
-  color:rgba(255,255,255,0.3);
-  border-left:1px solid rgba(106,171,94,0.15);
-  height:100%;
-  white-space:nowrap;
-}
+.live-badge{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:0 14px;font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,0.3);border-left:1px solid rgba(106,171,94,0.15);height:100%;white-space:nowrap;}
 .live-badge .ld{width:5px;height:5px;border-radius:50%;background:var(--up);animation:tickPulse 2s infinite;}
-.update-time{font-size:9px;color:rgba(255,255,255,0.22);}
 
-/* ══════════════════════════════════════════
-   AUTH SCREEN
-══════════════════════════════════════════ */
+/* ── AUTH ── */
 #authScreen{align-items:stretch;height:100vh;overflow:hidden;}
-
-.auth-left{
-  flex:1;position:relative;overflow:hidden;
-  background:linear-gradient(160deg,#0c2010 0%,#1b3a1e 42%,#2d5a27 78%,#183818 100%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;
-}
-.auth-left::before{
-  content:'';position:absolute;inset:0;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity:0.5;
-}
-.map-glow{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:480px;height:480px;
-  background:radial-gradient(circle,rgba(106,171,94,0.2) 0%,rgba(45,90,39,0.06) 55%,transparent 75%);
-  border-radius:50%;animation:glowP 4s ease-in-out infinite;
-}
+.auth-left{flex:1;position:relative;overflow:hidden;background:linear-gradient(160deg,#0c2010 0%,#1b3a1e 42%,#2d5a27 78%,#183818 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;}
+.auth-left::before{content:'';position:absolute;inset:0;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:0.5;}
+.map-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:480px;height:480px;background:radial-gradient(circle,rgba(106,171,94,0.2) 0%,rgba(45,90,39,0.06) 55%,transparent 75%);border-radius:50%;animation:glowP 4s ease-in-out infinite;}
 @keyframes glowP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.7;}50%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}}
-
 .auth-brand{position:relative;z-index:2;text-align:center;margin-bottom:24px;animation:fadeDown 0.8s ease both;}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
 .auth-brand-row{display:inline-flex;align-items:center;gap:12px;margin-bottom:8px;}
@@ -227,7 +101,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .auth-brand-name{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.5px;}
 .auth-brand-name span{color:var(--leaf);}
 .auth-brand-tag{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);font-weight:500;}
-
 .auth-map{position:relative;z-index:2;width:100%;max-width:300px;filter:drop-shadow(0 16px 50px rgba(0,0,0,0.5));animation:mapRev 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s both;}
 @keyframes mapRev{from{opacity:0;transform:scale(0.82) translateY(28px)}to{opacity:1;transform:none}}
 .auth-map svg{width:100%;height:auto;}
@@ -235,22 +108,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .sp:hover,.sp.hl{fill:rgba(106,171,94,0.42);stroke:var(--leaf);stroke-width:1.2px;}
 .map-dot-auth{position:absolute;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.3),0 0 12px rgba(201,168,76,0.6);animation:dotP 2.5s ease-in-out infinite;}
 @keyframes dotP{0%,100%{transform:scale(1);}50%{transform:scale(1.5);box-shadow:0 0 0 6px rgba(201,168,76,0.15),0 0 24px rgba(201,168,76,0.8);}}
-
 .auth-stats{position:relative;z-index:2;display:flex;gap:24px;margin-top:22px;animation:fadeUp 0.8s ease 0.6s both;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 .a-stat{text-align:center;}
 .a-stat-n{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--leaf);line-height:1;}
 .a-stat-l{font-size:10px;color:rgba(255,255,255,0.38);margin-top:2px;letter-spacing:0.5px;}
 .a-div{width:1px;background:rgba(106,171,94,0.2);align-self:stretch;margin:4px 0;}
-
-.auth-right{
-  width:460px;min-width:460px;background:var(--warm);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:40px 44px;position:relative;overflow:hidden;overflow-y:auto;
-}
+.auth-right{width:460px;min-width:460px;background:var(--warm);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 44px;position:relative;overflow:hidden;overflow-y:auto;}
 .auth-right::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--forest),var(--leaf),var(--gold),var(--leaf),var(--forest));background-size:200% 100%;animation:stripe 3s linear infinite;}
 @keyframes stripe{to{background-position:-200% 0;}}
-
 .auth-form-box{width:100%;max-width:380px;position:relative;z-index:1;}
 .auth-form-header{margin-bottom:28px;text-align:center;}
 .auth-eyebrow{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--leaf);font-weight:600;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px;}
@@ -259,11 +125,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .auth-eyebrow::after{background:linear-gradient(90deg,rgba(106,171,94,0.4),transparent);}
 .auth-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--dark-green);line-height:1.2;margin-bottom:6px;}
 .auth-sub{font-size:13px;color:var(--text-light);line-height:1.6;}
-
 .auth-tabs{display:flex;background:var(--pale);border-radius:13px;padding:5px;margin-bottom:26px;border:1px solid rgba(106,171,94,0.2);}
 .a-tab{flex:1;padding:9px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--text-light);border-radius:9px;cursor:pointer;transition:all 0.28s cubic-bezier(0.34,1.56,0.64,1);}
 .a-tab.active{background:#fff;color:var(--dark-green);box-shadow:0 4px 14px rgba(45,90,39,0.12);transform:scale(1.02);}
-
 .f-group{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
 .f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .f-field{position:relative;}
@@ -276,7 +140,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .pwd-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:var(--text-light);z-index:2;}
 .f-err{font-size:11px;color:#e05252;margin-top:4px;display:none;align-items:center;gap:3px;}
 .f-err.show{display:flex;}
-
 .extras-r{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;}
 .chk-wrap{display:flex;align-items:center;gap:7px;cursor:pointer;}
 .chk-box{width:17px;height:17px;border-radius:5px;border:1.5px solid rgba(106,171,94,0.4);background:#fff;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;cursor:pointer;}
@@ -285,7 +148,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .chk-lbl{font-size:12px;color:var(--text-mid);}
 .fgt-lnk{font-size:12px;color:var(--leaf);font-weight:600;cursor:pointer;transition:color 0.2s;}
 .fgt-lnk:hover{color:var(--forest);}
-
 .sub-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--forest),var(--mid),var(--leaf));background-size:200% 200%;animation:gShift 4s ease infinite;color:#fff;border:none;border-radius:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 8px 26px rgba(45,90,39,0.32);transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;margin-bottom:18px;}
 @keyframes gShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .sub-btn::before{content:'';position:absolute;top:-50%;left:-80%;width:60%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transform:skewX(-20deg);animation:shim 2.5s ease-in-out infinite;}
@@ -295,30 +157,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .sub-btn.loading .bt{opacity:0;}
 .sub-btn.loading::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:spn 0.7s linear infinite;}
 @keyframes spn{to{transform:translate(-50%,-50%) rotate(360deg);}}
-
 .or-r{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
 .or-l{flex:1;height:1px;background:rgba(106,171,94,0.2);}
 .or-t{font-size:11px;color:var(--text-light);font-weight:500;letter-spacing:0.5px;}
-
 .soc-r{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px;}
 .soc-b{padding:10px;border-radius:11px;border:1.5px solid rgba(106,171,94,0.2);background:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:all 0.25s;}
 .soc-b:hover{border-color:var(--leaf);box-shadow:0 4px 14px rgba(106,171,94,0.15);transform:translateY(-2px);}
-
 .sw-row{text-align:center;font-size:13px;color:var(--text-light);}
 .sw-lnk{color:var(--forest);font-weight:700;cursor:pointer;border-bottom:1px solid rgba(45,90,39,0.3);padding-bottom:1px;transition:color 0.2s;}
 .sw-lnk:hover{color:var(--leaf);}
-
 .fv{transition:opacity 0.32s ease,transform 0.32s cubic-bezier(0.16,1,0.3,1);}
 .fv.hidden{opacity:0;transform:translateX(16px);position:absolute;pointer-events:none;}
 .fv.visible{opacity:1;transform:none;}
-
 .str-track{height:3px;border-radius:10px;background:rgba(106,171,94,0.12);overflow:hidden;margin-top:6px;}
 .str-fill{height:100%;border-radius:10px;width:0;transition:width 0.4s ease,background 0.4s ease;}
 .str-lbl{font-size:11px;margin-top:3px;color:var(--text-light);}
-
 .terms-w{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text-light);line-height:1.5;margin-bottom:16px;}
 .terms-w .chk-box{margin-top:1px;flex-shrink:0;}
 .tl{color:var(--leaf);cursor:pointer;font-weight:600;}
+
+/* Phone OTP panel */
+.otp-panel{display:none;flex-direction:column;gap:14px;}
+.otp-panel.active{display:flex;}
+.phone-input-wrap{display:flex;gap:8px;}
+.phone-prefix{padding:12px 13px;border:1.5px solid rgba(106,171,94,0.25);border-radius:11px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;width:72px;text-align:center;}
+.otp-boxes{display:flex;gap:8px;justify-content:center;margin-top:4px;}
+.otp-box{width:44px;height:50px;border:1.5px solid rgba(106,171,94,0.25);border-radius:11px;background:#fff;font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--dark-green);text-align:center;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.otp-box:focus{border-color:var(--leaf);box-shadow:0 0 0 4px rgba(106,171,94,0.12);}
+#recaptcha-container{margin:8px 0;}
 
 .succ-ov{position:fixed;inset:0;z-index:999;background:rgba(27,58,30,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.5s ease;}
 .succ-ov.show{opacity:1;pointer-events:all;}
@@ -329,23 +195,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .succ-bar{width:220px;height:3px;background:rgba(255,255,255,0.1);border-radius:10px;margin-top:36px;overflow:hidden;animation:fadeUp 0.6s 0.6s both;}
 .succ-fill{height:100%;background:var(--leaf);border-radius:10px;width:0;transition:width 2.5s ease;}
 
+/* Firebase auth error banner */
+.fb-err{background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#c0392b;margin-bottom:14px;display:none;align-items:center;gap:8px;}
+.fb-err.show{display:flex;}
+
 @media(max-width:900px){.auth-left{display:none;}#authScreen{justify-content:center;}.auth-right{width:100%;min-width:0;height:100vh;overflow-y:auto;}}
 @media(max-width:480px){.auth-right{padding:28px 20px;}.auth-title{font-size:24px;}.f-row{grid-template-columns:1fr;}}
 
-/* ══════════════════════════════════════════
-   ██  DASHBOARD
-══════════════════════════════════════════ */
+/* ── DASHBOARD ── */
 #dashScreen{position:relative;}
-
-.d-nav{
-  position:sticky;top:38px;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 36px;
-  background:rgba(244,249,241,0.82);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(106,171,94,0.2);
-  animation:slideD 0.6s ease;
-}
+.d-nav{position:sticky;top:38px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 36px;background:rgba(244,249,241,0.82);backdrop-filter:blur(20px);border-bottom:1px solid rgba(106,171,94,0.2);animation:slideD 0.6s ease;}
 @keyframes slideD{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
 .d-nav-left{display:flex;align-items:center;gap:12px;}
 .d-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--forest),var(--leaf));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px var(--shadow-green);animation:lP 3s ease-in-out infinite;}
@@ -358,9 +217,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .user-name{font-size:13px;font-weight:600;color:var(--text-mid);}
 .logout-btn{display:flex;align-items:center;gap:6px;padding:7px 15px;background:transparent;border:1.5px solid rgba(106,171,94,0.3);border-radius:30px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all 0.2s;}
 .logout-btn:hover{background:rgba(220,53,53,0.08);border-color:rgba(220,53,53,0.3);color:#c0392b;}
-
 .d-wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 80px;}
-
 .d-hero{text-align:center;padding:60px 0 44px;animation:fadeUp 0.8s ease 0.15s both;}
 .d-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--olive);background:linear-gradient(135deg,var(--pale),var(--mint));padding:5px 16px;border-radius:30px;border:1px solid rgba(106,171,94,0.3);margin-bottom:22px;}
 .d-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--leaf);animation:dPulse 2s infinite;}
@@ -371,20 +228,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .d-hero-sub{font-size:16px;color:var(--text-light);max-width:500px;margin:0 auto 32px;font-weight:300;line-height:1.7;}
 .d-stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;}
 .d-stat{text-align:center;animation:fadeUp 0.7s ease both;}
-.d-stat:nth-child(1){animation-delay:0.4s}
-.d-stat:nth-child(2){animation-delay:0.55s}
-.d-stat:nth-child(3){animation-delay:0.7s}
+.d-stat:nth-child(1){animation-delay:0.4s}.d-stat:nth-child(2){animation-delay:0.55s}.d-stat:nth-child(3){animation-delay:0.7s}
 .d-stat-n{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--forest);line-height:1;}
 .d-stat-l{font-size:11px;color:var(--text-light);margin-top:3px;font-weight:500;}
-
 .card{background:rgba(255,255,255,0.78);backdrop-filter:blur(16px);border:1px solid rgba(106,171,94,0.2);border-radius:20px;padding:28px 32px;margin-bottom:22px;box-shadow:0 4px 28px rgba(45,90,39,0.07);transition:box-shadow 0.3s ease,transform 0.3s ease;}
 .card:hover{box-shadow:0 8px 44px rgba(45,90,39,0.13);transform:translateY(-2px);}
 .card-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--dark-green);margin-bottom:18px;display:flex;align-items:center;gap:9px;}
 .c-ico{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--pale),var(--mint));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-
 .map-region-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
 @media(max-width:820px){.map-region-layout{grid-template-columns:1fr;}}
-
 .dash-map-wrap{position:relative;width:100%;max-width:340px;margin:0 auto;}
 .dash-map-wrap svg{width:100%;height:auto;}
 .dsp{fill:rgba(106,171,94,0.13);stroke:rgba(106,171,94,0.5);stroke-width:0.9px;cursor:pointer;transition:fill 0.25s,stroke 0.25s;}
@@ -392,7 +244,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .dsp.d-active{fill:rgba(45,90,39,0.55);stroke:var(--leaf);stroke-width:1.8px;}
 .map-state-label{position:absolute;background:rgba(27,58,30,0.9);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:8px;border:1px solid rgba(106,171,94,0.3);pointer-events:none;opacity:0;transition:opacity 0.2s;white-space:nowrap;z-index:10;}
 .map-state-label.show{opacity:1;}
-
 .region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:9px;max-height:380px;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--sage) transparent;}
 .region-grid::-webkit-scrollbar{width:4px;}
 .region-grid::-webkit-scrollbar-thumb{background:var(--sage);border-radius:10px;}
@@ -401,10 +252,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .r-btn.active{background:linear-gradient(135deg,var(--forest),var(--mid));color:#fff;border-color:transparent;box-shadow:0 5px 18px rgba(45,90,39,0.28);transform:translateY(-2px);}
 .r-ico{font-size:20px;display:block;margin-bottom:4px;}
 .r-stat{font-size:9px;opacity:0.65;margin-top:2px;}
-
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
 @media(max-width:720px){.two-col{grid-template-columns:1fr;}}
-
 .seas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 @media(max-width:480px){.seas-grid{grid-template-columns:1fr;}}
 .seas-btn{padding:16px 12px;border-radius:14px;border:1.5px solid rgba(106,171,94,0.22);background:var(--cream);cursor:pointer;text-align:center;transition:all 0.28s cubic-bezier(0.34,1.56,0.64,1);font-family:'DM Sans',sans-serif;}
@@ -417,7 +266,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .seas-btn.active .s-mo{color:rgba(255,255,255,0.6);}
 .s-crops{font-size:10px;font-weight:600;letter-spacing:0.7px;color:var(--olive);margin-top:4px;display:block;transition:color 0.2s;}
 .seas-btn.active .s-crops{color:var(--gold-light);}
-
 .soil-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
 .soil-btn{padding:14px 10px;border-radius:12px;border:1.5px solid rgba(106,171,94,0.18);background:var(--cream);cursor:pointer;text-align:center;transition:all 0.28s cubic-bezier(0.34,1.56,0.64,1);font-family:'DM Sans',sans-serif;position:relative;overflow:hidden;}
 .soil-btn::before{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;border-radius:0 0 10px 10px;transition:height 0.3s;}
@@ -434,7 +282,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .soil-ico{font-size:22px;display:block;margin-bottom:5px;}
 .soil-name{font-size:12px;font-weight:600;color:var(--dark-green);display:block;}
 .soil-desc{font-size:10px;color:var(--text-light);margin-top:2px;line-height:1.4;display:block;}
-
 .inp-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 @media(max-width:640px){.inp-grid{grid-template-columns:1fr;}}
 .sl-wrap{display:flex;flex-direction:column;gap:6px;}
@@ -444,18 +291,15 @@ input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:10
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--forest);box-shadow:0 0 0 3px rgba(106,171,94,0.28);cursor:pointer;transition:transform 0.2s;}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .sl-hint{font-size:11px;color:var(--text-light);}
-
 .pred-wrap{display:flex;justify-content:center;margin:28px 0 0;}
 .pred-btn{position:relative;overflow:hidden;padding:16px 56px;background:linear-gradient(135deg,var(--forest),var(--mid),var(--leaf));background-size:200% 200%;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;letter-spacing:0.4px;border:none;border-radius:50px;cursor:pointer;box-shadow:0 8px 28px rgba(45,90,39,0.32);transition:transform 0.2s,box-shadow 0.2s;animation:gShift 4s ease infinite;}
 .pred-btn::before{content:'';position:absolute;top:-50%;left:-80%;width:60%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:skewX(-20deg);animation:shim 3s ease-in-out infinite;}
 .pred-btn:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(45,90,39,0.42);}
-
 .d-loader{display:none;flex-direction:column;align-items:center;gap:10px;padding:28px;}
 .d-loader.active{display:flex;}
 .d-loader-ring{width:44px;height:44px;border-radius:50%;border:3px solid var(--pale);border-top-color:var(--leaf);animation:spn 0.8s linear infinite;}
 .d-loader-txt{font-size:13px;color:var(--text-light);animation:dPulse2 1.5s ease-in-out infinite;}
 @keyframes dPulse2{0%,100%{opacity:0.5}50%{opacity:1}}
-
 #result-section{display:none;}
 #result-section.visible{display:block;animation:fadeUp 0.6s ease both;}
 .res-hero{background:linear-gradient(135deg,var(--dark-green),var(--forest));border-radius:18px;padding:36px;text-align:center;color:#fff;margin-bottom:18px;position:relative;overflow:hidden;}
@@ -468,7 +312,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .conf-lbl strong{color:#fff;font-size:14px;}
 .conf-track{height:7px;border-radius:10px;background:rgba(255,255,255,0.14);overflow:hidden;}
 .conf-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--light),var(--gold));width:0;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);}
-
 .met-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
 @media(max-width:700px){.met-grid{grid-template-columns:repeat(2,1fr);}}
 .met-card{background:rgba(255,255,255,0.82);border:1px solid rgba(106,171,94,0.18);border-radius:14px;padding:16px 12px;text-align:center;transition:transform 0.2s;}
@@ -477,7 +320,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .met-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--forest);line-height:1;}
 .met-u{font-size:11px;color:var(--text-light);}
 .met-lbl{font-size:10px;color:var(--text-light);margin-top:3px;font-weight:500;}
-
 .ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
 @media(max-width:640px){.ins-grid{grid-template-columns:1fr;}}
 .ins-card{border-radius:14px;padding:20px;border:1px solid rgba(106,171,94,0.16);}
@@ -486,7 +328,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .ins-t{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-light);margin-bottom:8px;}
 .ins-v{font-family:'Playfair Display',serif;font-size:20px;color:var(--dark-green);margin-bottom:5px;}
 .ins-d{font-size:12px;color:var(--text-mid);line-height:1.6;}
-
 .det-sec{border-radius:18px;padding:24px 28px;border:1px solid rgba(106,171,94,0.18);margin-bottom:18px;background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);}
 .det-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--dark-green);margin-bottom:14px;display:flex;align-items:center;gap:9px;padding-bottom:12px;border-bottom:1px solid rgba(106,171,94,0.14);}
 .meas-list,.insec-list{display:flex;flex-direction:column;gap:10px;}
@@ -504,17 +345,13 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .badge.chemical{background:rgba(220,53,53,0.1);color:#c0392b;}
 .badge.organic{background:rgba(46,204,113,0.14);color:#1e8449;}
 .badge.bio{background:rgba(52,152,219,0.14);color:#1a5276;}
-
 .ai-ld{display:flex;flex-direction:column;align-items:center;gap:12px;padding:36px;}
 .ai-ld-ring{width:44px;height:44px;border-radius:50%;border:3px solid var(--pale);border-top-color:var(--leaf);animation:spn 0.85s linear infinite;}
 .ai-ld-txt{font-size:13px;color:var(--text-light);animation:dPulse2 1.5s ease-in-out infinite;text-align:center;max-width:260px;line-height:1.6;}
-
 .reveal{opacity:0;transform:translateY(22px);transition:opacity 0.7s ease,transform 0.7s ease;}
 .reveal.shown{opacity:1;transform:none;}
-
 .toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--dark-green);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:0 8px 28px rgba(0,0,0,0.22);transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);display:flex;align-items:center;gap:9px;}
 .toast.show{transform:none;}
-
 footer{text-align:center;padding:36px 24px 18px;font-size:12px;color:var(--text-light);border-top:1px solid rgba(106,171,94,0.14);margin-top:40px;}
 footer strong{color:var(--forest);}
 </style>
@@ -526,6 +363,9 @@ footer strong{color:var(--forest);}
 </div>
 <div id="globalCanvas"></div>
 
+<!-- reCAPTCHA container (invisible, needed for Phone OTP) -->
+<div id="recaptcha-container"></div>
+
 <div class="succ-ov" id="succOv">
   <div class="succ-ico">🌾</div>
   <div class="succ-title" id="succTitle">Welcome!</div>
@@ -535,33 +375,19 @@ footer strong{color:var(--forest);}
 
 <div class="toast" id="toast"><span>🌱</span><span id="toastMsg">Hello</span></div>
 
-<!-- ═══════════════════════════════════
-     LIVE PRICE TICKER
-═══════════════════════════════════ -->
+<!-- TICKER -->
 <div id="priceTicker">
-  <div class="ticker-label">
-    <div class="dot"></div>
-    LIVE MANDI PRICES
-  </div>
-  <div class="ticker-track">
-    <div class="ticker-inner" id="tickerInner"></div>
-  </div>
-  <div class="live-badge">
-    <div class="ld"></div>
-    <span id="tickerTime">--:--</span>
-  </div>
-  <button class="pp-toggle-btn shown" id="ppToggleBtn" onclick="togglePricePanel()">
-    📊 View All
-  </button>
+  <div class="ticker-label"><div class="dot"></div>LIVE MANDI PRICES</div>
+  <div class="ticker-track"><div class="ticker-inner" id="tickerInner"></div></div>
+  <div class="live-badge"><div class="ld"></div><span id="tickerTime">--:--</span></div>
+  <button class="pp-toggle-btn shown" id="ppToggleBtn" onclick="togglePricePanel()">📊 View All</button>
 </div>
-
-<!-- PRICE PANEL (expanded) -->
 <div class="price-panel" id="pricePanel">
   <div class="price-panel-inner">
     <div class="pp-header">
       <div>
         <div class="pp-title">📈 Mandi Price Dashboard <span style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,0.4);font-weight:400;margin-left:6px;">Agmarknet Reference Prices · ₹/Quintal</span></div>
-        <div class="pp-sub">Prices update every 30 seconds · Simulated for demonstration</div>
+        <div class="pp-sub">Prices update every 8 seconds · Simulated for demonstration</div>
       </div>
       <button class="pp-close" onclick="togglePricePanel()">✕ Close</button>
     </div>
@@ -569,10 +395,7 @@ footer strong{color:var(--forest);}
   </div>
 </div>
 
-
-<!-- ═══════════════════════════════════════
-     AUTH SCREEN
-═══════════════════════════════════════ -->
+<!-- AUTH SCREEN -->
 <div class="screen active" id="authScreen">
   <div class="auth-left">
     <div class="map-glow"></div>
@@ -586,34 +409,28 @@ footer strong{color:var(--forest);}
     </div>
     <div class="auth-map" id="authMapWrap">
       <svg viewBox="0 0 500 580" xmlns="http://www.w3.org/2000/svg">
-        <defs><filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-        <path class="sp" id="asp-jk" d="M165,10 L185,8 L215,15 L240,12 L258,24 L262,40 L250,56 L238,66 L222,70 L208,60 L192,68 L178,57 L168,44 L160,30 Z"/>
-        <path class="sp" id="asp-hp" d="M178,57 L208,60 L222,70 L218,90 L202,97 L188,89 L176,74 Z"/>
-        <path class="sp" id="asp-pb" d="M153,68 L176,74 L188,89 L180,107 L162,112 L147,101 L143,84 Z"/>
-        <path class="sp" id="asp-hr" d="M162,112 L180,107 L193,118 L190,137 L173,143 L160,131 Z"/>
-        <path class="sp" id="asp-uk" d="M202,97 L218,90 L238,98 L244,115 L226,124 L208,120 L196,109 Z"/>
-        <path class="sp" id="asp-rj" d="M118,116 L153,108 L160,131 L173,143 L176,168 L168,198 L152,218 L136,232 L116,226 L98,210 L93,184 L98,157 L106,136 Z"/>
-        <path class="sp" id="asp-up" d="M190,137 L208,120 L244,115 L270,120 L288,133 L292,154 L276,170 L254,177 L228,180 L204,174 L183,163 L176,148 Z"/>
-        <path class="sp" id="asp-br" d="M288,133 L314,130 L332,141 L334,161 L319,173 L296,170 L279,163 L276,148 Z"/>
-        <path class="sp" id="asp-wb" d="M334,141 L358,134 L368,150 L362,175 L347,191 L332,198 L320,188 L317,171 Z"/>
-        <path class="sp" id="asp-jh" d="M296,170 L319,173 L330,184 L326,203 L309,213 L290,207 L278,194 L281,180 Z"/>
-        <path class="sp" id="asp-as" d="M358,134 L388,130 L408,141 L410,155 L393,163 L369,165 L353,157 Z"/>
-        <path class="sp" id="asp-ar" d="M382,110 L422,107 L447,120 L437,137 L412,141 L387,130 Z"/>
-        <path class="sp" id="asp-ml" d="M362,163 L393,161 L398,177 L376,182 L360,177 Z"/>
-        <path class="sp" id="asp-ne" d="M392,163 L418,157 L428,175 L420,197 L402,202 L387,190 L380,177 Z"/>
-        <path class="sp" id="asp-od" d="M279,194 L309,213 L320,228 L313,251 L296,263 L272,260 L254,244 L251,222 L260,207 Z"/>
-        <path class="sp" id="asp-cg" d="M228,180 L254,177 L279,194 L260,207 L251,222 L234,228 L213,217 L204,200 L209,184 Z"/>
-        <path class="sp" id="asp-mp" d="M153,167 L183,163 L204,174 L209,184 L204,200 L183,210 L163,214 L141,207 L128,191 L128,170 L138,158 Z"/>
-        <path class="sp" id="asp-gj" d="M83,182 L116,174 L128,191 L128,216 L116,234 L98,250 L78,254 L62,240 L58,216 L66,196 Z"/>
-        <path class="sp" id="asp-mh" d="M128,216 L153,216 L183,210 L213,217 L234,228 L234,258 L213,275 L190,283 L166,280 L146,267 L128,250 L116,234 Z"/>
-        <path class="sp" id="asp-ga" d="M146,285 L160,282 L163,296 L150,300 Z"/>
-        <path class="sp" id="asp-ka" d="M146,267 L166,280 L190,283 L212,292 L216,315 L206,340 L184,355 L160,357 L138,344 L126,320 L123,294 L130,277 Z"/>
-        <path class="sp" id="asp-tg" d="M213,217 L251,222 L254,244 L270,260 L263,278 L243,283 L222,277 L210,260 L210,239 Z"/>
-        <path class="sp" id="asp-ap" d="M213,275 L251,260 L273,270 L287,288 L281,315 L266,332 L244,344 L220,348 L206,340 L216,315 L212,292 Z"/>
-        <path class="sp" id="asp-tn" d="M160,357 L184,355 L206,340 L220,348 L226,372 L220,400 L206,420 L188,432 L170,428 L153,411 L146,387 L148,367 Z"/>
-        <path class="sp" id="asp-kl" d="M146,344 L160,357 L148,367 L146,387 L138,402 L128,413 L118,397 L116,371 L123,350 Z"/>
-        <path class="sp" id="asp-sk" d="M328,120 L340,117 L344,128 L334,132 Z"/>
-        <path class="sp" id="asp-dl" d="M176,130 L187,128 L189,138 L179,140 Z"/>
+        <path class="sp" d="M165,10 L185,8 L215,15 L240,12 L258,24 L262,40 L250,56 L238,66 L222,70 L208,60 L192,68 L178,57 L168,44 L160,30 Z"/>
+        <path class="sp" d="M178,57 L208,60 L222,70 L218,90 L202,97 L188,89 L176,74 Z"/>
+        <path class="sp" d="M153,68 L176,74 L188,89 L180,107 L162,112 L147,101 L143,84 Z"/>
+        <path class="sp" d="M162,112 L180,107 L193,118 L190,137 L173,143 L160,131 Z"/>
+        <path class="sp" d="M202,97 L218,90 L238,98 L244,115 L226,124 L208,120 L196,109 Z"/>
+        <path class="sp" d="M118,116 L153,108 L160,131 L173,143 L176,168 L168,198 L152,218 L136,232 L116,226 L98,210 L93,184 L98,157 L106,136 Z"/>
+        <path class="sp" d="M190,137 L208,120 L244,115 L270,120 L288,133 L292,154 L276,170 L254,177 L228,180 L204,174 L183,163 L176,148 Z"/>
+        <path class="sp" d="M288,133 L314,130 L332,141 L334,161 L319,173 L296,170 L279,163 L276,148 Z"/>
+        <path class="sp" d="M334,141 L358,134 L368,150 L362,175 L347,191 L332,198 L320,188 L317,171 Z"/>
+        <path class="sp" d="M296,170 L319,173 L330,184 L326,203 L309,213 L290,207 L278,194 L281,180 Z"/>
+        <path class="sp" d="M358,134 L388,130 L408,141 L410,155 L393,163 L369,165 L353,157 Z"/>
+        <path class="sp" d="M382,110 L422,107 L447,120 L437,137 L412,141 L387,130 Z"/>
+        <path class="sp" d="M279,194 L309,213 L320,228 L313,251 L296,263 L272,260 L254,244 L251,222 L260,207 Z"/>
+        <path class="sp" d="M228,180 L254,177 L279,194 L260,207 L251,222 L234,228 L213,217 L204,200 L209,184 Z"/>
+        <path class="sp" d="M153,167 L183,163 L204,174 L209,184 L204,200 L183,210 L163,214 L141,207 L128,191 L128,170 L138,158 Z"/>
+        <path class="sp" d="M83,182 L116,174 L128,191 L128,216 L116,234 L98,250 L78,254 L62,240 L58,216 L66,196 Z"/>
+        <path class="sp" d="M128,216 L153,216 L183,210 L213,217 L234,228 L234,258 L213,275 L190,283 L166,280 L146,267 L128,250 L116,234 Z"/>
+        <path class="sp" d="M146,267 L166,280 L190,283 L212,292 L216,315 L206,340 L184,355 L160,357 L138,344 L126,320 L123,294 L130,277 Z"/>
+        <path class="sp" d="M213,217 L251,222 L254,244 L270,260 L263,278 L243,283 L222,277 L210,260 L210,239 Z"/>
+        <path class="sp" d="M213,275 L251,260 L273,270 L287,288 L281,315 L266,332 L244,344 L220,348 L206,340 L216,315 L212,292 Z"/>
+        <path class="sp" d="M160,357 L184,355 L206,340 L220,348 L226,372 L220,400 L206,420 L188,432 L170,428 L153,411 L146,387 L148,367 Z"/>
+        <path class="sp" d="M146,344 L160,357 L148,367 L146,387 L138,402 L128,413 L118,397 L116,371 L123,350 Z"/>
         <rect x="2" y="2" width="496" height="576" rx="12" fill="none" stroke="rgba(106,171,94,0.12)" stroke-width="1" stroke-dasharray="4 8"/>
       </svg>
       <div class="map-dot-auth" style="width:10px;height:10px;top:72%;left:43%;animation-delay:0s;"></div>
@@ -621,9 +438,6 @@ footer strong{color:var(--forest);}
       <div class="map-dot-auth" style="width:9px;height:9px;top:54%;left:62%;animation-delay:1s;"></div>
       <div class="map-dot-auth" style="width:8px;height:8px;top:27%;left:67%;animation-delay:1.5s;"></div>
       <div class="map-dot-auth" style="width:10px;height:10px;top:33%;left:44%;animation-delay:2s;background:var(--light);"></div>
-      <div class="map-dot-auth" style="width:9px;height:9px;top:22%;left:28%;animation-delay:0.8s;"></div>
-      <div class="map-dot-auth" style="width:8px;height:8px;top:46%;left:27%;animation-delay:1.3s;"></div>
-      <div class="map-dot-auth" style="width:7px;height:7px;top:23%;left:79%;animation-delay:0.3s;background:var(--light);"></div>
     </div>
     <div class="auth-stats">
       <div class="a-stat"><div class="a-stat-n">28+</div><div class="a-stat-l">States</div></div>
@@ -645,7 +459,10 @@ footer strong{color:var(--forest);}
         <button class="a-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
         <button class="a-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
       </div>
+
+      <!-- ── LOGIN VIEW ── -->
       <div class="fv visible" id="loginView" style="position:relative;">
+        <div class="fb-err" id="loginErr">⚠ <span id="loginErrMsg">Error</span></div>
         <div class="f-group">
           <div class="f-field">
             <label class="f-lbl">Email Address</label>
@@ -668,12 +485,40 @@ footer strong{color:var(--forest);}
         <button class="sub-btn" id="loginBtn" onclick="handleLogin()"><span class="bt">🚀 &nbsp;Sign In</span></button>
         <div class="or-r"><div class="or-l"></div><span class="or-t">or continue with</span><div class="or-l"></div></div>
         <div class="soc-r">
-          <button class="soc-b" onclick="socialLogin('Google')"><span>🌐</span> Google</button>
-          <button class="soc-b" onclick="socialLogin('Phone OTP')"><span>📱</span> Phone OTP</button>
+          <button class="soc-b" onclick="googleLogin()"><span>🌐</span> Google</button>
+          <button class="soc-b" onclick="showPhonePanel()"><span>📱</span> Phone OTP</button>
+        </div>
+        <!-- Phone OTP sub-panel -->
+        <div class="otp-panel" id="phonePanel">
+          <div class="fb-err" id="phoneErr">⚠ <span id="phoneErrMsg">Error</span></div>
+          <div class="f-field">
+            <label class="f-lbl">Phone Number</label>
+            <div class="phone-input-wrap">
+              <input class="phone-prefix" type="text" value="+91" id="phonePrefix">
+              <div class="f-wrap" style="flex:1"><span class="f-ico">📱</span><input type="tel" id="phoneNum" placeholder="98765 43210" style="padding-left:41px;width:100%;padding:12px 13px 12px 41px;border:1.5px solid rgba(106,171,94,0.25);border-radius:11px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;"></div>
+            </div>
+          </div>
+          <button class="sub-btn" id="sendOtpBtn" onclick="sendOTP()" style="margin-bottom:0"><span class="bt">📤 Send OTP</span></button>
+          <div id="otpVerifyWrap" style="display:none;">
+            <label class="f-lbl" style="margin-bottom:8px;text-align:center;display:block;">Enter 6-digit OTP</label>
+            <div class="otp-boxes">
+              <input class="otp-box" maxlength="1" oninput="otpMove(this,0)" id="otp0">
+              <input class="otp-box" maxlength="1" oninput="otpMove(this,1)" id="otp1">
+              <input class="otp-box" maxlength="1" oninput="otpMove(this,2)" id="otp2">
+              <input class="otp-box" maxlength="1" oninput="otpMove(this,3)" id="otp3">
+              <input class="otp-box" maxlength="1" oninput="otpMove(this,4)" id="otp4">
+              <input class="otp-box" maxlength="1" oninput="otpMove(this,5)" id="otp5">
+            </div>
+            <button class="sub-btn" id="verifyOtpBtn" onclick="verifyOTP()" style="margin-top:14px"><span class="bt">✅ Verify & Sign In</span></button>
+          </div>
+          <button style="background:none;border:none;color:var(--text-light);font-size:12px;cursor:pointer;margin-top:4px;font-family:'DM Sans',sans-serif;" onclick="hidePhonePanel()">← Back to email login</button>
         </div>
         <div class="sw-row">New to AgroSense? <span class="sw-lnk" onclick="switchAuthTab('signup')">Create free account →</span></div>
       </div>
+
+      <!-- ── SIGNUP VIEW ── -->
       <div class="fv hidden" id="signupView">
+        <div class="fb-err" id="signupErr">⚠ <span id="signupErrMsg">Error</span></div>
         <div class="f-group">
           <div class="f-row">
             <div class="f-field">
@@ -692,10 +537,6 @@ footer strong{color:var(--forest);}
             <div class="f-err" id="err-sEmail">⚠ Enter a valid email</div>
           </div>
           <div class="f-field">
-            <label class="f-lbl">Phone Number</label>
-            <div class="f-wrap"><span class="f-ico">📱</span><input type="tel" id="sPhone" placeholder="+91 98765 43210"></div>
-          </div>
-          <div class="f-field">
             <label class="f-lbl">Password</label>
             <div class="f-wrap"><span class="f-ico">🔒</span><input type="password" id="sPwd" placeholder="Min 8 characters" oninput="updateStr(this.value)"><button class="pwd-eye" onclick="toggleEye('sPwd',this)">👁</button></div>
             <div class="str-track"><div class="str-fill" id="strFill"></div></div>
@@ -710,8 +551,7 @@ footer strong{color:var(--forest);}
         <button class="sub-btn" id="signupBtn" onclick="handleSignup()"><span class="bt">🌱 &nbsp;Create Account</span></button>
         <div class="or-r"><div class="or-l"></div><span class="or-t">or sign up with</span><div class="or-l"></div></div>
         <div class="soc-r">
-          <button class="soc-b" onclick="socialLogin('Google')"><span>🌐</span> Google</button>
-          <button class="soc-b" onclick="socialLogin('Phone OTP')"><span>📱</span> Phone OTP</button>
+          <button class="soc-b" onclick="googleLogin()"><span>🌐</span> Google</button>
         </div>
         <div class="sw-row">Already have an account? <span class="sw-lnk" onclick="switchAuthTab('login')">Sign in →</span></div>
       </div>
@@ -719,10 +559,7 @@ footer strong{color:var(--forest);}
   </div>
 </div>
 
-
-<!-- ═══════════════════════════════════════
-     DASHBOARD SCREEN
-═══════════════════════════════════════ -->
+<!-- DASHBOARD SCREEN -->
 <div id="dashScreen">
   <nav class="d-nav">
     <div class="d-nav-left">
@@ -743,11 +580,6 @@ footer strong{color:var(--forest);}
       <div class="d-eyebrow">Smart Crop Intelligence</div>
       <h1>Grow Smarter with<br><em>AI-Driven</em> <span class="acc">Agronomy</span></h1>
       <p class="d-hero-sub">Enter your soil & climate parameters. Our AI recommends the optimal crop, preventive measures, and insecticides for your region.</p>
-      <div class="d-stats">
-        <div class="d-stat"><div class="d-stat-n">28+</div><div class="d-stat-l">Indian States</div></div>
-        <div class="d-stat"><div class="d-stat-n">22+</div><div class="d-stat-l">Crop Varieties</div></div>
-        <div class="d-stat"><div class="d-stat-n">96%</div><div class="d-stat-l">AI Accuracy</div></div>
-      </div>
     </section>
 
     <div class="card reveal">
@@ -757,7 +589,6 @@ footer strong{color:var(--forest);}
         <div>
           <div class="dash-map-wrap" id="dashMapWrap">
             <svg viewBox="0 0 500 580" xmlns="http://www.w3.org/2000/svg" id="dashMap">
-              <defs><filter id="dglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
               <path class="dsp" data-state="Jammu & Kashmir" d="M165,10 L185,8 L215,15 L240,12 L258,24 L262,40 L250,56 L238,66 L222,70 L208,60 L192,68 L178,57 L168,44 L160,30 Z"/>
               <path class="dsp" data-state="Himachal Pradesh" d="M178,57 L208,60 L222,70 L218,90 L202,97 L188,89 L176,74 Z"/>
               <path class="dsp" data-state="Punjab" d="M153,68 L176,74 L188,89 L180,107 L162,112 L147,101 L143,84 Z"/>
@@ -826,9 +657,9 @@ footer strong{color:var(--forest);}
         <div class="card-title"><div class="c-ico">🌤️</div>Growing Season</div>
         <p style="font-size:12px;color:var(--text-light);margin-bottom:14px;">Select sowing season — influences crop & pest patterns.</p>
         <div class="seas-grid">
-          <button class="seas-btn active" data-season="Kharif" onclick="selSeason(this)"><span class="s-ico">☔</span><span class="s-name">Kharif</span><span class="s-mo">June – November</span><span class="s-crops">Rice · Cotton · Maize</span></button>
-          <button class="seas-btn" data-season="Rabi" onclick="selSeason(this)"><span class="s-ico">❄️</span><span class="s-name">Rabi</span><span class="s-mo">Nov – April</span><span class="s-crops">Wheat · Mustard · Pea</span></button>
-          <button class="seas-btn" data-season="Zaid" onclick="selSeason(this)"><span class="s-ico">☀️</span><span class="s-name">Zaid</span><span class="s-mo">March – June</span><span class="s-crops">Melon · Cucumber</span></button>
+          <button class="seas-btn active" data-season="Kharif (Monsoon)" onclick="selSeason(this)"><span class="s-ico">☔</span><span class="s-name">Kharif</span><span class="s-mo">June – November</span><span class="s-crops">Rice · Cotton · Maize</span></button>
+          <button class="seas-btn" data-season="Rabi (Winter)" onclick="selSeason(this)"><span class="s-ico">❄️</span><span class="s-name">Rabi</span><span class="s-mo">Nov – April</span><span class="s-crops">Wheat · Mustard · Pea</span></button>
+          <button class="seas-btn" data-season="Zaid (Summer)" onclick="selSeason(this)"><span class="s-ico">☀️</span><span class="s-name">Zaid</span><span class="s-mo">March – June</span><span class="s-crops">Melon · Cucumber</span></button>
         </div>
       </div>
       <div class="card reveal">
@@ -897,427 +728,409 @@ footer strong{color:var(--forest);}
     </div>
   </div>
 
-  <footer>Built with <strong>AgroSense AI</strong> · Powered by Claude · 🌱 Cultivating India's future</footer>
+  <footer>© 2026 Janani Priya · <strong>AgroSense AI</strong> · Cultivating India's future 🌱</footer>
 </div>
 
+<!-- ══ FIREBASE SDK ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDLJR8MvIEKbnDddOwPlVhQYxmckh8TOnI",
+  authDomain: "agrosense-1e358.firebaseapp.com",
+  projectId: "agrosense-1e358",
+  storageBucket: "agrosense-1e358.firebasestorage.app",
+  messagingSenderId: "737496863419",
+  appId: "1:737496863419:web:d87d7b7e52ff0351804f9e",
+  measurementId: "G-4BEL5GP92Z"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+
+let confirmationResult = null;
+let recaptchaVerifier = null;
+
+/* ── Helpers ── */
+function fireErrMsg(code) {
+  const map = {
+    'auth/invalid-email': 'Invalid email address.',
+    'auth/user-disabled': 'This account has been disabled.',
+    'auth/user-not-found': 'No account found with this email.',
+    'auth/wrong-password': 'Incorrect password. Try again.',
+    'auth/email-already-in-use': 'Email already registered. Please sign in.',
+    'auth/weak-password': 'Password too weak — use at least 6 characters.',
+    'auth/too-many-requests': 'Too many attempts. Please wait and try again.',
+    'auth/popup-closed-by-user': 'Sign-in popup was closed.',
+    'auth/cancelled-popup-request': 'Another popup is already open.',
+    'auth/invalid-phone-number': 'Enter a valid phone number with country code.',
+    'auth/invalid-verification-code': 'Incorrect OTP code. Try again.',
+    'auth/code-expired': 'OTP expired. Please resend.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/operation-not-allowed': 'This sign-in method is not enabled in Firebase Console.',
+  };
+  return map[code] || 'Authentication error. Please try again.';
+}
+
+function showFBErr(panelId, msgId, msg) {
+  const panel = document.getElementById(panelId);
+  document.getElementById(msgId).textContent = msg;
+  panel.classList.add('show');
+  setTimeout(() => panel.classList.remove('show'), 6000);
+}
+
+function hideFBErr(panelId) {
+  document.getElementById(panelId)?.classList.remove('show');
+}
+
+/* ── Auth state listener — auto-restore session ── */
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const name = user.displayName || user.email?.split('@')[0] || 'Farmer';
+    window._enterDash(name, user.email || '');
+  }
+});
+
+/* ── Email/Password Login ── */
+window._firebaseLogin = async function(email, pwd, remember) {
+  hideFBErr('loginErr');
+  try {
+    await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+    await signInWithEmailAndPassword(auth, email, pwd);
+    // onAuthStateChanged handles the redirect
+  } catch (e) {
+    document.getElementById('loginBtn').classList.remove('loading');
+    showFBErr('loginErr', 'loginErrMsg', fireErrMsg(e.code));
+  }
+};
+
+/* ── Email/Password Signup ── */
+window._firebaseSignup = async function(email, pwd, displayName) {
+  hideFBErr('signupErr');
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+    await updateProfile(cred.user, { displayName });
+    // onAuthStateChanged handles redirect
+  } catch (e) {
+    document.getElementById('signupBtn').classList.remove('loading');
+    showFBErr('signupErr', 'signupErrMsg', fireErrMsg(e.code));
+  }
+};
+
+/* ── Google Login ── */
+window._firebaseGoogle = async function() {
+  hideFBErr('loginErr');
+  const provider = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, provider);
+    // onAuthStateChanged handles redirect
+  } catch (e) {
+    if (e.code !== 'auth/popup-closed-by-user') {
+      showFBErr('loginErr', 'loginErrMsg', fireErrMsg(e.code));
+    }
+  }
+};
+
+/* ── Forgot Password ── */
+window._firebaseForgot = async function(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    window.showSuccess('Reset Link Sent! 📧', `Check your inbox at ${email}.`);
+  } catch (e) {
+    showFBErr('loginErr', 'loginErrMsg', fireErrMsg(e.code));
+  }
+};
+
+/* ── Logout ── */
+window._firebaseLogout = async function() {
+  await signOut(auth);
+};
+
+/* ── Phone OTP: Send ── */
+window._sendPhoneOTP = async function(phoneNumber) {
+  hideFBErr('phoneErr');
+  try {
+    if (!recaptchaVerifier) {
+      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: () => {}
+      });
+    }
+    confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+    document.getElementById('sendOtpBtn').classList.remove('loading');
+    document.getElementById('otpVerifyWrap').style.display = 'block';
+    document.getElementById('otp0').focus();
+    window.toast('📲 OTP sent to ' + phoneNumber);
+  } catch (e) {
+    document.getElementById('sendOtpBtn').classList.remove('loading');
+    showFBErr('phoneErr', 'phoneErrMsg', fireErrMsg(e.code));
+    // Reset recaptcha on error
+    if (recaptchaVerifier) {
+      recaptchaVerifier.clear();
+      recaptchaVerifier = null;
+    }
+  }
+};
+
+/* ── Phone OTP: Verify ── */
+window._verifyPhoneOTP = async function(code) {
+  hideFBErr('phoneErr');
+  if (!confirmationResult) {
+    showFBErr('phoneErr', 'phoneErrMsg', 'Please request OTP first.');
+    document.getElementById('verifyOtpBtn').classList.remove('loading');
+    return;
+  }
+  try {
+    await confirmationResult.confirm(code);
+    // onAuthStateChanged handles redirect
+  } catch (e) {
+    document.getElementById('verifyOtpBtn').classList.remove('loading');
+    showFBErr('phoneErr', 'phoneErrMsg', fireErrMsg(e.code));
+  }
+};
+</script>
 
 <script>
-/* ══════════════════════════════════════
-   PRICE TICKER DATA & ENGINE
-══════════════════════════════════════ */
-const MANDI_BASE = [
-  {crop:"Rice",     emoji:"🌾", base:2183, unit:"₹/qtl", min:1800, max:2800},
-  {crop:"Wheat",    emoji:"🌿", base:2275, unit:"₹/qtl", min:1900, max:2700},
-  {crop:"Maize",    emoji:"🌽", base:1868, unit:"₹/qtl", min:1500, max:2300},
-  {crop:"Cotton",   emoji:"🤍", base:6620, unit:"₹/qtl", min:5800, max:7800},
-  {crop:"Soybean",  emoji:"🫘", base:4380, unit:"₹/qtl", min:3800, max:5200},
-  {crop:"Sugarcane",emoji:"🍬", base:315,  unit:"₹/qtl", min:280,  max:370},
-  {crop:"Chickpea", emoji:"🟡", base:5410, unit:"₹/qtl", min:4800, max:6200},
-  {crop:"Onion",    emoji:"🧅", base:1240, unit:"₹/qtl", min:600,  max:3000},
-  {crop:"Tomato",   emoji:"🍅", base:1860, unit:"₹/qtl", min:400,  max:5000},
-  {crop:"Potato",   emoji:"🥔", base:920,  unit:"₹/qtl", min:500,  max:1800},
-  {crop:"Turmeric", emoji:"🟠", base:12400,unit:"₹/qtl", min:9000, max:17000},
-  {crop:"Groundnut",emoji:"🥜", base:5830, unit:"₹/qtl", min:5000, max:7000},
-  {crop:"Mustard",  emoji:"🌼", base:5650, unit:"₹/qtl", min:4800, max:6500},
-  {crop:"Banana",   emoji:"🍌", base:1120, unit:"₹/qtl", min:600,  max:2200},
-  {crop:"Mango",    emoji:"🥭", base:3200, unit:"₹/qtl", min:1800, max:6000},
-  {crop:"Arhar Dal",emoji:"🟤", base:7020, unit:"₹/qtl", min:6000, max:8500},
-  {crop:"Coffee",   emoji:"☕", base:28600,unit:"₹/qtl", min:22000,max:36000},
-  {crop:"Coconut",  emoji:"🥥", base:1640, unit:"₹/qtl", min:1200, max:2200},
+/* ════════════════════════════════════════
+   PRICE TICKER
+════════════════════════════════════════ */
+const MANDI_BASE=[
+  {crop:"Rice",emoji:"🌾",base:2183,unit:"₹/qtl",min:1800,max:2800},
+  {crop:"Wheat",emoji:"🌿",base:2275,unit:"₹/qtl",min:1900,max:2700},
+  {crop:"Maize",emoji:"🌽",base:1868,unit:"₹/qtl",min:1500,max:2300},
+  {crop:"Cotton",emoji:"🤍",base:6620,unit:"₹/qtl",min:5800,max:7800},
+  {crop:"Soybean",emoji:"🫘",base:4380,unit:"₹/qtl",min:3800,max:5200},
+  {crop:"Sugarcane",emoji:"🍬",base:315,unit:"₹/qtl",min:280,max:370},
+  {crop:"Chickpea",emoji:"🟡",base:5410,unit:"₹/qtl",min:4800,max:6200},
+  {crop:"Onion",emoji:"🧅",base:1240,unit:"₹/qtl",min:600,max:3000},
+  {crop:"Tomato",emoji:"🍅",base:1860,unit:"₹/qtl",min:400,max:5000},
+  {crop:"Potato",emoji:"🥔",base:920,unit:"₹/qtl",min:500,max:1800},
+  {crop:"Turmeric",emoji:"🟠",base:12400,unit:"₹/qtl",min:9000,max:17000},
+  {crop:"Groundnut",emoji:"🥜",base:5830,unit:"₹/qtl",min:5000,max:7000},
+  {crop:"Mustard",emoji:"🌼",base:5650,unit:"₹/qtl",min:4800,max:6500},
+  {crop:"Banana",emoji:"🍌",base:1120,unit:"₹/qtl",min:600,max:2200},
+  {crop:"Mango",emoji:"🥭",base:3200,unit:"₹/qtl",min:1800,max:6000},
+  {crop:"Arhar Dal",emoji:"🟤",base:7020,unit:"₹/qtl",min:6000,max:8500},
+  {crop:"Coffee",emoji:"☕",base:28600,unit:"₹/qtl",min:22000,max:36000},
+  {crop:"Coconut",emoji:"🥥",base:1640,unit:"₹/qtl",min:1200,max:2200},
 ];
-
-let priceData = MANDI_BASE.map(c => ({
-  ...c,
-  price: c.base,
-  prev: c.base,
-  history: Array.from({length:12},()=> c.base + (Math.random()-0.5)*c.base*0.06),
-}));
-
+let priceData=MANDI_BASE.map(c=>({...c,price:c.base,prev:c.base,history:Array.from({length:12},()=>c.base+(Math.random()-0.5)*c.base*0.06)}));
 function rndFloat(a,b){return a+Math.random()*(b-a);}
-
-function fluctuatePrices(){
-  priceData = priceData.map(c=>{
-    const delta = (Math.random()-0.46) * c.base * 0.012;
-    const newP = Math.max(c.min, Math.min(c.max, c.price + delta));
-    return {...c, prev: c.price, price: Math.round(newP),
-      history:[...c.history.slice(1), Math.round(newP)]};
-  });
-}
-
-function pct(c){ return ((c.price - c.prev)/c.prev*100); }
-function dirClass(c){ const p=pct(c); return p>0?'up':p<0?'dn':'fl'; }
-function dirArrow(c){ const p=pct(c); return p>0?'▲':p<0?'▼':'—'; }
-
-/* draw mini sparkline */
-function drawSparkline(canvas,history,dir){
-  const ctx=canvas.getContext('2d');
-  const w=canvas.width,h=canvas.height;
-  ctx.clearRect(0,0,w,h);
-  const mn=Math.min(...history),mx=Math.max(...history);
-  const range=mx-mn||1;
-  const pts=history.map((v,i)=>({x:(i/(history.length-1))*w,y:h-((v-mn)/range)*h*0.85-1}));
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x,pts[0].y);
-  pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
-  const color=dir==='up'?'#22c55e':dir==='dn'?'#ef4444':'#f59e0b';
-  ctx.strokeStyle=color;
-  ctx.lineWidth=1.5;
-  ctx.lineJoin='round';
-  ctx.stroke();
-  // Fill gradient
-  ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();
-  const grad=ctx.createLinearGradient(0,0,0,h);
-  grad.addColorStop(0,color.replace(')',',0.25)').replace('rgb','rgba'));
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=grad;
-  ctx.fill();
-}
-
-function buildTickerItems(){
-  return priceData.map((c,i)=>{
-    const p=pct(c),d=dirClass(c),a=dirArrow(c),pStr=p>=0?'+':'';
-    return `<div class="t-item" title="${c.crop} — Agmarknet Reference">
-      <span class="t-crop">${c.emoji} ${c.crop}</span>
-      <span class="t-price">₹${c.price.toLocaleString('en-IN')}</span>
-      <span class="t-unit">/qtl</span>
-      <span class="t-change ${d}"><span class="t-arrow">${a}</span>${pStr}${Math.abs(p).toFixed(2)}%</span>
-      <canvas class="spark-canvas" id="spark-${i}" width="42" height="18"></canvas>
-    </div>`;
-  }).join('');
-}
-
-function buildPanelCards(){
-  return priceData.map((c,i)=>{
-    const p=pct(c),d=dirClass(c),a=dirArrow(c),pStr=p>=0?'+':'';
-    const fillW=Math.round((c.price-c.min)/(c.max-c.min)*100);
-    const fillC=d==='up'?'#22c55e':d==='dn'?'#ef4444':'#f59e0b';
-    return `<div class="pp-card">
-      <div class="pp-card-top"><span class="pp-crop">${c.crop}</span><span class="pp-emoji">${c.emoji}</span></div>
-      <div class="pp-price-row">
-        <span class="pp-price">₹${c.price.toLocaleString('en-IN')}</span>
-        <span class="pp-u">/qtl</span>
-      </div>
-      <span class="pp-ch ${d}">${a} ${pStr}${Math.abs(p).toFixed(2)}%</span>
-      <div class="pp-bar"><div class="pp-bar-fill" style="width:${fillW}%;background:${fillC};"></div></div>
-      <div class="pp-range"><span>₹${c.min.toLocaleString('en-IN')}</span><span>52w range</span><span>₹${c.max.toLocaleString('en-IN')}</span></div>
-    </div>`;
-  }).join('');
-}
-
-function renderTicker(){
-  const inner=document.getElementById('tickerInner');
-  const items=buildTickerItems();
-  // Duplicate for seamless scroll
-  inner.innerHTML=items+items;
-  // Paint sparklines
-  priceData.forEach((c,i)=>{
-    ['spark-'+i, 'spark-'+(i+priceData.length)].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el) drawSparkline(el,c.history,dirClass(c));
-    });
-  });
-}
-
-function renderPanel(){
-  const grid=document.getElementById('ppGrid');
-  if(grid) grid.innerHTML=buildPanelCards();
-}
-
-function updateTickerTime(){
-  const t=document.getElementById('tickerTime');
-  if(t){const n=new Date();t.textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-}
-
+function fluctuatePrices(){priceData=priceData.map(c=>{const delta=(Math.random()-0.46)*c.base*0.012;const newP=Math.max(c.min,Math.min(c.max,c.price+delta));return{...c,prev:c.price,price:Math.round(newP),history:[...c.history.slice(1),Math.round(newP)]};});}
+function pct(c){return((c.price-c.prev)/c.prev*100);}
+function dirClass(c){const p=pct(c);return p>0?'up':p<0?'dn':'fl';}
+function dirArrow(c){const p=pct(c);return p>0?'▲':p<0?'▼':'—';}
+function drawSparkline(canvas,history,dir){const ctx=canvas.getContext('2d');const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);const mn=Math.min(...history),mx=Math.max(...history);const range=mx-mn||1;const pts=history.map((v,i)=>({x:(i/(history.length-1))*w,y:h-((v-mn)/range)*h*0.85-1}));ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));const color=dir==='up'?'#22c55e':dir==='dn'?'#ef4444':'#f59e0b';ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,color+'44');grad.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=grad;ctx.fill();}
+function buildTickerItems(){return priceData.map((c,i)=>{const p=pct(c),d=dirClass(c),a=dirArrow(c),pStr=p>=0?'+':'';return`<div class="t-item"><span class="t-crop">${c.emoji} ${c.crop}</span><span class="t-price">₹${c.price.toLocaleString('en-IN')}</span><span class="t-unit">/qtl</span><span class="t-change ${d}"><span class="t-arrow">${a}</span>${pStr}${Math.abs(p).toFixed(2)}%</span><canvas class="spark-canvas" id="spark-${i}" width="42" height="18"></canvas></div>`;}).join('');}
+function buildPanelCards(){return priceData.map((c,i)=>{const p=pct(c),d=dirClass(c),a=dirArrow(c),pStr=p>=0?'+':'';const fillW=Math.round((c.price-c.min)/(c.max-c.min)*100);const fillC=d==='up'?'#22c55e':d==='dn'?'#ef4444':'#f59e0b';return`<div class="pp-card"><div class="pp-card-top"><span class="pp-crop">${c.crop}</span><span class="pp-emoji">${c.emoji}</span></div><div class="pp-price-row"><span class="pp-price">₹${c.price.toLocaleString('en-IN')}</span><span class="pp-u">/qtl</span></div><span class="pp-ch ${d}">${a} ${pStr}${Math.abs(p).toFixed(2)}%</span><div class="pp-bar"><div class="pp-bar-fill" style="width:${fillW}%;background:${fillC};"></div></div><div class="pp-range"><span>₹${c.min.toLocaleString('en-IN')}</span><span>52w range</span><span>₹${c.max.toLocaleString('en-IN')}</span></div></div>`;}).join('');}
+function renderTicker(){const inner=document.getElementById('tickerInner');const items=buildTickerItems();inner.innerHTML=items+items;priceData.forEach((c,i)=>{['spark-'+i,'spark-'+(i+priceData.length)].forEach(id=>{const el=document.getElementById(id);if(el)drawSparkline(el,c.history,dirClass(c));});});}
+function renderPanel(){const grid=document.getElementById('ppGrid');if(grid)grid.innerHTML=buildPanelCards();}
+function updateTickerTime(){const t=document.getElementById('tickerTime');if(t){const n=new Date();t.textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}}
 let tickerRunning=false;
-function startTicker(){
-  if(tickerRunning)return;
-  tickerRunning=true;
-  renderTicker();
-  renderPanel();
-  updateTickerTime();
-  setInterval(()=>{
-    fluctuatePrices();
-    renderTicker();
-    renderPanel();
-    updateTickerTime();
-  },8000);
-  setInterval(updateTickerTime,1000);
-}
-
+function startTicker(){if(tickerRunning)return;tickerRunning=true;renderTicker();renderPanel();updateTickerTime();setInterval(()=>{fluctuatePrices();renderTicker();renderPanel();updateTickerTime();},8000);setInterval(updateTickerTime,1000);}
 let panelOpen=false;
-function togglePricePanel(){
-  panelOpen=!panelOpen;
-  document.getElementById('pricePanel').classList.toggle('open',panelOpen);
-  document.getElementById('ppToggleBtn').textContent=panelOpen?'✕ Close':'📊 View All';
-}
+function togglePricePanel(){panelOpen=!panelOpen;document.getElementById('pricePanel').classList.toggle('open',panelOpen);document.getElementById('ppToggleBtn').textContent=panelOpen?'✕ Close':'📊 View All';}
 
-/* ══════════════════════════════════════
+/* ════════════════════════════════════════
    GLOBALS
-══════════════════════════════════════ */
+════════════════════════════════════════ */
 let currentUser={name:'Farmer',email:''};
-let activeRegion='Tamil Nadu',activeSeason='Kharif',activeSoil='Clay';
+let activeRegion='Tamil Nadu',activeSeason='Kharif (Monsoon)',activeSoil='Clay';
+const regions={"Tamil Nadu":{temp:30,hum:70,rain:120},"Kerala":{temp:28,hum:85,rain:250},"Punjab":{temp:25,hum:60,rain:80},"Maharashtra":{temp:32,hum:65,rain:100},"Karnataka":{temp:29,hum:68,rain:110},"Andhra Pradesh":{temp:31,hum:72,rain:130},"Uttar Pradesh":{temp:27,hum:63,rain:95},"Madhya Pradesh":{temp:28,hum:62,rain:105},"Rajasthan":{temp:35,hum:40,rain:45},"Gujarat":{temp:33,hum:58,rain:75},"West Bengal":{temp:27,hum:80,rain:175},"Bihar":{temp:26,hum:72,rain:115},"Odisha":{temp:30,hum:78,rain:155},"Assam":{temp:26,hum:82,rain:220},"Himachal Pradesh":{temp:15,hum:55,rain:130},"Telangana":{temp:30,hum:68,rain:115},"Jharkhand":{temp:26,hum:74,rain:135},"Chhattisgarh":{temp:28,hum:70,rain:140},"Uttarakhand":{temp:18,hum:58,rain:145},"Haryana":{temp:26,hum:57,rain:70},"Jammu & Kashmir":{temp:12,hum:50,rain:110},"Goa":{temp:28,hum:80,rain:280},"Delhi":{temp:28,hum:55,rain:65}};
+const cropInfo={rice:{emoji:"🌾",profit:"High",profitDesc:"Strong staple demand; govt MSP support.",ai:"Paddy thrives in high humidity regions like yours."},wheat:{emoji:"🌿",profit:"Medium",profitDesc:"Steady demand with moderate market swings.",ai:"Cool winters in your region suit wheat perfectly."},maize:{emoji:"🌽",profit:"Medium",profitDesc:"Versatile crop with feed & food demand.",ai:"Moderate NPK with average rainfall yields healthy maize."},cotton:{emoji:"🤍",profit:"High",profitDesc:"Export-grade fiber commands premium prices.",ai:"Black soil & warm climate create ideal cotton conditions."},sugarcane:{emoji:"🍬",profit:"High",profitDesc:"Sugar mills offer fixed procurement rates.",ai:"High rainfall accelerates sugarcane tonnage per acre."},chickpea:{emoji:"🟡",profit:"Medium",profitDesc:"Rising health-food market drives demand.",ai:"Well-drained soils with moderate rainfall suit chickpea."},pigeonpeas:{emoji:"🟤",profit:"Low",profitDesc:"Drought-tolerant; suits low-input farming.",ai:"Deep roots access subsoil moisture; suited to erratic rain."},mungbean:{emoji:"💚",profit:"Medium",profitDesc:"Short-cycle crop with quick turnaround.",ai:"High humidity accelerates germination rates."},blackgram:{emoji:"⚫",profit:"Medium",profitDesc:"Consistent demand in South Indian markets.",ai:"Performs well under warm, humid climates like yours."},lentil:{emoji:"🟠",profit:"Low",profitDesc:"Niche crop; protein demand slowly improving.",ai:"Cool, dry late-season conditions improve seed quality."},pomegranate:{emoji:"🍎",profit:"High",profitDesc:"Premium fruit with high export demand.",ai:"Drought tolerance makes it ideal for lower rainfall regions."},banana:{emoji:"🍌",profit:"High",profitDesc:"Year-round demand; perishability drives local prices.",ai:"Tropical humidity and warmth provide optimal growth."},mango:{emoji:"🥭",profit:"High",profitDesc:"India's king fruit: strong domestic & export prices.",ai:"Dry winters followed by warm summers trigger mango flowering."},grapes:{emoji:"🍇",profit:"High",profitDesc:"Wine & table grape export market expanding fast.",ai:"Low post-monsoon humidity reduces disease pressure."},watermelon:{emoji:"🍉",profit:"Medium",profitDesc:"High seasonal demand; quick crop cycle ROI.",ai:"Sandy loam with warm temperatures suit watermelon well."},muskmelon:{emoji:"🍈",profit:"Medium",profitDesc:"Rising demand in urban fresh produce markets.",ai:"Warm days and cool nights develop superior sugar content."},apple:{emoji:"🍏",profit:"High",profitDesc:"Premium highland fruit; limited supply keeps prices high.",ai:"Cold winters essential for dormancy and fruit development."},coconut:{emoji:"🥥",profit:"High",profitDesc:"Multiple products (oil, water, coir) diversify income.",ai:"High humidity coastal climate matches coconut's optimal range."},coffee:{emoji:"☕",profit:"High",profitDesc:"Specialty coffee premiums reward quality cultivation.",ai:"High-altitude shade-grown conditions suit Arabica perfectly."},papaya:{emoji:"🍑",profit:"Medium",profitDesc:"Fast-maturing; returns within 9–10 months.",ai:"Warm tropical climate accelerates development cycle."}};
+function getCropInfo(name){const k=name.toLowerCase().replace(/\s/g,'');return cropInfo[k]||{emoji:"🌱",profit:"Moderate",profitDesc:"Moderate returns based on regional demand.",ai:"This crop suits your soil & climate inputs well."};}
 
-const regions={
-  "Tamil Nadu":{temp:30,hum:70,rain:120},"Kerala":{temp:28,hum:85,rain:250},"Punjab":{temp:25,hum:60,rain:80},
-  "Maharashtra":{temp:32,hum:65,rain:100},"Karnataka":{temp:29,hum:68,rain:110},"Andhra Pradesh":{temp:31,hum:72,rain:130},
-  "Uttar Pradesh":{temp:27,hum:63,rain:95},"Madhya Pradesh":{temp:28,hum:62,rain:105},"Rajasthan":{temp:35,hum:40,rain:45},
-  "Gujarat":{temp:33,hum:58,rain:75},"West Bengal":{temp:27,hum:80,rain:175},"Bihar":{temp:26,hum:72,rain:115},
-  "Odisha":{temp:30,hum:78,rain:155},"Assam":{temp:26,hum:82,rain:220},"Himachal Pradesh":{temp:15,hum:55,rain:130},
-  "Telangana":{temp:30,hum:68,rain:115},"Jharkhand":{temp:26,hum:74,rain:135},"Chhattisgarh":{temp:28,hum:70,rain:140},
-  "Uttarakhand":{temp:18,hum:58,rain:145},"Haryana":{temp:26,hum:57,rain:70},"Jammu & Kashmir":{temp:12,hum:50,rain:110},
-  "Goa":{temp:28,hum:80,rain:280},"Delhi":{temp:28,hum:55,rain:65},
-};
-
-const cropInfo={
-  rice:{emoji:"🌾",profit:"High",profitDesc:"Strong staple demand; govt MSP support.",ai:"Paddy thrives in high humidity regions like yours."},
-  wheat:{emoji:"🌿",profit:"Medium",profitDesc:"Steady demand with moderate market swings.",ai:"Cool winters in your region suit wheat perfectly."},
-  maize:{emoji:"🌽",profit:"Medium",profitDesc:"Versatile crop with feed & food demand.",ai:"Moderate NPK with average rainfall yields healthy maize."},
-  cotton:{emoji:"🤍",profit:"High",profitDesc:"Export-grade fiber commands premium prices.",ai:"Black soil & warm climate create ideal cotton conditions."},
-  sugarcane:{emoji:"🍬",profit:"High",profitDesc:"Sugar mills offer fixed procurement rates.",ai:"High rainfall accelerates sugarcane tonnage per acre."},
-  chickpea:{emoji:"🟡",profit:"Medium",profitDesc:"Rising health-food market drives demand.",ai:"Well-drained soils with moderate rainfall suit chickpea."},
-  pigeonpeas:{emoji:"🟤",profit:"Low",profitDesc:"Drought-tolerant; suits low-input farming.",ai:"Deep roots access subsoil moisture; suited to erratic rain."},
-  mungbean:{emoji:"💚",profit:"Medium",profitDesc:"Short-cycle crop with quick turnaround.",ai:"High humidity accelerates germination rates."},
-  blackgram:{emoji:"⚫",profit:"Medium",profitDesc:"Consistent demand in South Indian markets.",ai:"Performs well under warm, humid climates like yours."},
-  lentil:{emoji:"🟠",profit:"Low",profitDesc:"Niche crop; protein demand slowly improving.",ai:"Cool, dry late-season conditions improve seed quality."},
-  pomegranate:{emoji:"🍎",profit:"High",profitDesc:"Premium fruit with high export demand.",ai:"Drought tolerance makes it ideal for lower rainfall regions."},
-  banana:{emoji:"🍌",profit:"High",profitDesc:"Year-round demand; perishability drives local prices.",ai:"Tropical humidity and warmth provide optimal growth."},
-  mango:{emoji:"🥭",profit:"High",profitDesc:"India's king fruit: strong domestic & export prices.",ai:"Dry winters followed by warm summers trigger mango flowering."},
-  grapes:{emoji:"🍇",profit:"High",profitDesc:"Wine & table grape export market expanding fast.",ai:"Low post-monsoon humidity reduces disease pressure."},
-  watermelon:{emoji:"🍉",profit:"Medium",profitDesc:"High seasonal demand; quick crop cycle ROI.",ai:"Sandy loam with warm temperatures suit watermelon well."},
-  muskmelon:{emoji:"🍈",profit:"Medium",profitDesc:"Rising demand in urban fresh produce markets.",ai:"Warm days and cool nights develop superior sugar content."},
-  apple:{emoji:"🍏",profit:"High",profitDesc:"Premium highland fruit; limited supply keeps prices high.",ai:"Cold winters essential for dormancy and fruit development."},
-  coconut:{emoji:"🥥",profit:"High",profitDesc:"Multiple products (oil, water, coir) diversify income.",ai:"High humidity coastal climate matches coconut's optimal range."},
-  coffee:{emoji:"☕",profit:"High",profitDesc:"Specialty coffee premiums reward quality cultivation.",ai:"High-altitude shade-grown conditions suit Arabica perfectly."},
-  papaya:{emoji:"🍑",profit:"Medium",profitDesc:"Fast-maturing; returns within 9–10 months.",ai:"Warm tropical climate accelerates development cycle."},
-};
-
-function getCropInfo(name){
-  const k=name.toLowerCase().replace(/\s/g,'');
-  return cropInfo[k]||{emoji:"🌱",profit:"Moderate",profitDesc:"Moderate returns based on regional demand.",ai:"This crop suits your soil & climate inputs well."};
-}
-
-/* ══════════════════════════════════════
-   FLOATING ANIMATIONS
-══════════════════════════════════════ */
+/* ════════════════════════════════════════
+   FLOATING PARTICLES
+════════════════════════════════════════ */
 const gc=document.getElementById('globalCanvas');
 const ac=document.getElementById('authCanvas');
 const FI=['🌾','🌿','🍃','🌱','🌸','🌻','🍀','🌼','🍂','🌵','🪴'];
 const PC=['radial-gradient(circle at 35% 35%,#f5e97a,#c9a84c 60%,#8a6c20)','radial-gradient(circle at 35% 35%,#c8f0a0,#6aab5e 60%,#2d5a27)','radial-gradient(circle at 35% 35%,#fff0a0,#e8c96a 60%,#a07830)'];
 function rnd(a,b){return a+Math.random()*(b-a);}
-
-function spawnElem(canvas,isLeft){
-  const el=document.createElement('div');
-  const isPollen=Math.random()<0.35;
-  el.className=isPollen?'f-elem f-pollen':'f-elem';
-  if(isPollen){
-    const sz=rnd(4,11);
-    el.style.cssText=`width:${sz}px;height:${sz}px;border-radius:50%;background:${PC[Math.floor(Math.random()*PC.length)]};left:${rnd(0,100)}%;bottom:${rnd(-3,2)}%;animation-duration:${rnd(8,20)}s,${rnd(1.5,3.5)}s;animation-delay:${rnd(0,4)}s,0s;box-shadow:0 0 ${sz*2}px rgba(201,168,76,0.7);position:absolute;`;
-  } else {
-    const e=FI[Math.floor(Math.random()*FI.length)],sz=rnd(isLeft?18:14,isLeft?42:32);
-    el.textContent=e;
-    el.style.cssText=`font-size:${sz}px;left:${rnd(0,93)}%;bottom:${rnd(-5,2)}%;animation-duration:${rnd(10,22)}s;animation-delay:${rnd(0,5)}s;filter:blur(${rnd(0,0.5)}px);position:absolute;`;
-  }
-  el.style.animationFillMode='forwards';
-  canvas.appendChild(el);
-  setTimeout(()=>el.remove(),24000);
-}
-
-function startFloating(){
-  for(let i=0;i<22;i++) setTimeout(()=>spawnElem(gc,false),i*280);
-  setInterval(()=>spawnElem(gc,false),700);
-  for(let i=0;i<14;i++) setTimeout(()=>spawnElem(ac,true),i*320);
-  setInterval(()=>spawnElem(ac,true),850);
-}
+function spawnElem(canvas,isLeft){const el=document.createElement('div');const isPollen=Math.random()<0.35;el.className=isPollen?'f-elem f-pollen':'f-elem';if(isPollen){const sz=rnd(4,11);el.style.cssText=`width:${sz}px;height:${sz}px;border-radius:50%;background:${PC[Math.floor(Math.random()*PC.length)]};left:${rnd(0,100)}%;bottom:${rnd(-3,2)}%;animation-duration:${rnd(8,20)}s,${rnd(1.5,3.5)}s;animation-delay:${rnd(0,4)}s,0s;box-shadow:0 0 ${sz*2}px rgba(201,168,76,0.7);position:absolute;`;}else{const e=FI[Math.floor(Math.random()*FI.length)],sz=rnd(isLeft?18:14,isLeft?42:32);el.textContent=e;el.style.cssText=`font-size:${sz}px;left:${rnd(0,93)}%;bottom:${rnd(-5,2)}%;animation-duration:${rnd(10,22)}s;animation-delay:${rnd(0,5)}s;filter:blur(${rnd(0,0.5)}px);position:absolute;`;}el.style.animationFillMode='forwards';canvas.appendChild(el);setTimeout(()=>el.remove(),24000);}
+function startFloating(){for(let i=0;i<22;i++)setTimeout(()=>spawnElem(gc,false),i*280);setInterval(()=>spawnElem(gc,false),700);for(let i=0;i<14;i++)setTimeout(()=>spawnElem(ac,true),i*320);setInterval(()=>spawnElem(ac,true),850);}
 startFloating();
-
 const authPaths=document.querySelectorAll('.sp');
 let authHL=null;
-setTimeout(()=>{
-  setInterval(()=>{
-    if(authHL) authHL.classList.remove('hl');
-    authHL=authPaths[Math.floor(Math.random()*authPaths.length)];
-    authHL.classList.add('hl');
-  },2000);
-},2500);
+setTimeout(()=>{setInterval(()=>{if(authHL)authHL.classList.remove('hl');authHL=authPaths[Math.floor(Math.random()*authPaths.length)];authHL.classList.add('hl');},2000);},2500);
 
-/* ══════════════════════════════════════
-   AUTH FORM LOGIC
-══════════════════════════════════════ */
-function switchAuthTab(tab){
-  const lv=document.getElementById('loginView'),sv=document.getElementById('signupView');
-  const tl=document.getElementById('tabLogin'),ts=document.getElementById('tabSignup');
-  const tt=document.getElementById('authTitle'),ts2=document.getElementById('authSub');
-  if(tab==='login'){
-    lv.className='fv visible';sv.className='fv hidden';
-    tl.classList.add('active');ts.classList.remove('active');
-    tt.innerHTML=`Welcome back,<br><em style="font-style:italic;color:var(--forest)">Farmer</em>`;
-    ts2.textContent='Sign in to access your AI crop intelligence dashboard.';
-  } else {
-    sv.className='fv visible';lv.className='fv hidden';
-    ts.classList.add('active');tl.classList.remove('active');
-    tt.innerHTML=`Join <em style="font-style:italic;color:var(--forest)">AgroSense</em>`;
-    ts2.textContent='Create your free account and start growing smarter today.';
-  }
-}
-
-function toggleEye(id,btn){
-  const i=document.getElementById(id);
-  i.type=i.type==='password'?'text':'password';
-  btn.textContent=i.type==='password'?'👁':'🙈';
-}
+/* ════════════════════════════════════════
+   AUTH FORM HELPERS
+════════════════════════════════════════ */
+function switchAuthTab(tab){const lv=document.getElementById('loginView'),sv=document.getElementById('signupView');const tl=document.getElementById('tabLogin'),ts=document.getElementById('tabSignup');const tt=document.getElementById('authTitle'),ts2=document.getElementById('authSub');if(tab==='login'){lv.className='fv visible';sv.className='fv hidden';tl.classList.add('active');ts.classList.remove('active');tt.innerHTML=`Welcome back,<br><em style="font-style:italic;color:var(--forest)">Farmer</em>`;ts2.textContent='Sign in to access your AI crop intelligence dashboard.';}else{sv.className='fv visible';lv.className='fv hidden';ts.classList.add('active');tl.classList.remove('active');tt.innerHTML=`Join <em style="font-style:italic;color:var(--forest)">AgroSense</em>`;ts2.textContent='Create your free account and start growing smarter today.';}}
+function toggleEye(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
 function toggleChk(id){document.getElementById(id).classList.toggle('on');}
 function showFErr(id,show){const el=document.getElementById(id);if(el)el.className=show?'f-err show':'f-err';}
-function validEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+function validEmail(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
 
-function updateStr(val){
-  const fill=document.getElementById('strFill'),lbl=document.getElementById('strLbl');
-  let s=0;
-  if(val.length>=8)s++;if(/[A-Z]/.test(val))s++;if(/[0-9]/.test(val))s++;if(/[^A-Za-z0-9]/.test(val))s++;
-  const c=[{w:'0%',bg:'transparent',t:'Enter a password'},{w:'25%',bg:'#e05252',t:'Weak — keep going'},{w:'50%',bg:'#e0a052',t:'Fair — add numbers'},{w:'75%',bg:'#c9a84c',t:'Good — almost there!'},{w:'100%',bg:'#6aab5e',t:'Strong 💪'}][s];
-  fill.style.width=c.w;fill.style.background=c.bg;lbl.textContent=c.t;lbl.style.color=c.bg==='transparent'?'var(--text-light)':c.bg;
-}
+function updateStr(val){const fill=document.getElementById('strFill'),lbl=document.getElementById('strLbl');let s=0;if(val.length>=8)s++;if(/[A-Z]/.test(val))s++;if(/[0-9]/.test(val))s++;if(/[^A-Za-z0-9]/.test(val))s++;const c=[{w:'0%',bg:'transparent',t:'Enter a password'},{w:'25%',bg:'#e05252',t:'Weak — keep going'},{w:'50%',bg:'#e0a052',t:'Fair — add numbers'},{w:'75%',bg:'#c9a84c',t:'Good — almost there!'},{w:'100%',bg:'#6aab5e',t:'Strong 💪'}][s];fill.style.width=c.w;fill.style.background=c.bg;lbl.textContent=c.t;lbl.style.color=c.bg==='transparent'?'var(--text-light)':c.bg;}
 
+/* ── Login with Firebase ── */
 function handleLogin(){
   const email=document.getElementById('lEmail').value.trim();
   const pwd=document.getElementById('lPwd').value;
-  showFErr('err-lEmail',!validEmail(email));showFErr('err-lPwd',pwd.length<6);
-  if(!validEmail(email)||pwd.length<6) return;
-  const btn=document.getElementById('loginBtn');btn.classList.add('loading');
-  const name=email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-  setTimeout(()=>{btn.classList.remove('loading');showSuccess(`Welcome back! 🌾`,`Signing you in as ${name}…`,()=>enterDash(name,email));},1800);
+  const remember=document.getElementById('remChk').classList.contains('on');
+  showFErr('err-lEmail',!validEmail(email));
+  showFErr('err-lPwd',pwd.length<6);
+  if(!validEmail(email)||pwd.length<6)return;
+  const btn=document.getElementById('loginBtn');
+  btn.classList.add('loading');
+  window._firebaseLogin(email,pwd,remember);
 }
 
+/* ── Signup with Firebase ── */
 function handleSignup(){
   const fname=document.getElementById('sFname').value.trim();
+  const lname=document.getElementById('sLname').value.trim();
   const email=document.getElementById('sEmail').value.trim();
   const pwd=document.getElementById('sPwd').value;
   const terms=document.getElementById('termsChk').classList.contains('on');
-  showFErr('err-sFname',!fname);showFErr('err-sEmail',!validEmail(email));showFErr('err-sPwd',pwd.length<8);
-  if(!fname||!validEmail(email)||pwd.length<8) return;
+  showFErr('err-sFname',!fname);
+  showFErr('err-sEmail',!validEmail(email));
+  showFErr('err-sPwd',pwd.length<8);
+  if(!fname||!validEmail(email)||pwd.length<8)return;
   if(!terms){toast('☝️ Please accept the Terms to continue.');return;}
-  const btn=document.getElementById('signupBtn');btn.classList.add('loading');
-  setTimeout(()=>{btn.classList.remove('loading');showSuccess(`Welcome, ${fname}! 🌱`,'Setting up your dashboard…',()=>enterDash(fname,email));},2000);
+  const displayName=(fname+' '+lname).trim();
+  const btn=document.getElementById('signupBtn');
+  btn.classList.add('loading');
+  window._firebaseSignup(email,pwd,displayName);
 }
 
-function socialLogin(p){
-  showSuccess(`Connecting via ${p}… 🌐`,'Authenticating securely…',()=>enterDash('Farmer',''));
+/* ── Google Login ── */
+function googleLogin(){
+  window._firebaseGoogle();
 }
+
+/* ── Forgot Password ── */
 function handleForgot(){
   const email=document.getElementById('lEmail').value.trim();
-  if(validEmail(email)){showSuccess('Reset Link Sent! 📧',`Check your inbox at ${email}.`);}
-  else{showFErr('err-lEmail',true);}
+  if(!validEmail(email)){showFErr('err-lEmail',true);toast('📧 Enter your email first.');return;}
+  window._firebaseForgot(email);
 }
 
-/* ══════════════════════════════════════
-   SCREEN NAVIGATION
-══════════════════════════════════════ */
+/* ── Phone OTP ── */
+function showPhonePanel(){document.getElementById('phonePanel').style.display='';document.getElementById('phonePanel').className='otp-panel active';}
+function hidePhonePanel(){document.getElementById('phonePanel').className='otp-panel';document.getElementById('otpVerifyWrap').style.display='none';}
+function sendOTP(){
+  const prefix=document.getElementById('phonePrefix').value.trim();
+  const num=document.getElementById('phoneNum').value.trim().replace(/\s/g,'');
+  if(!num||num.length<10){toast('📱 Enter a valid phone number.');return;}
+  const full=prefix+num;
+  const btn=document.getElementById('sendOtpBtn');
+  btn.classList.add('loading');
+  window._sendPhoneOTP(full);
+}
+function otpMove(el,idx){
+  if(el.value.length===1&&idx<5)document.getElementById('otp'+(idx+1)).focus();
+  if(idx===5){const code=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');if(code.length===6)verifyOTP();}
+}
+function verifyOTP(){
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join('');
+  if(code.length!==6){toast('⚠ Enter all 6 digits.');return;}
+  const btn=document.getElementById('verifyOtpBtn');
+  btn.classList.add('loading');
+  window._verifyPhoneOTP(code);
+}
+
+/* ════════════════════════════════════════
+   SCREEN NAVIGATION (called by Firebase module)
+════════════════════════════════════════ */
 function showSuccess(title,sub,onDone){
   const ov=document.getElementById('succOv');
   document.getElementById('succTitle').textContent=title;
   document.getElementById('succSub').textContent=sub;
   ov.classList.add('show');
   setTimeout(()=>{document.getElementById('succFill').style.width='100%';},200);
-  setTimeout(()=>{
-    ov.style.opacity='0';
-    setTimeout(()=>{ov.classList.remove('show');ov.style.opacity='';document.getElementById('succFill').style.width='0';if(onDone)onDone();},500);
-  },2600);
+  setTimeout(()=>{ov.style.opacity='0';setTimeout(()=>{ov.classList.remove('show');ov.style.opacity='';document.getElementById('succFill').style.width='0';if(onDone)onDone();},500);},2600);
 }
+window.showSuccess=showSuccess;
 
-function enterDash(name,email){
+let dashEntered=false;
+window._enterDash=function(name,email){
+  if(dashEntered)return; // prevent double-fire from onAuthStateChanged
+  dashEntered=true;
   currentUser={name,email};
   document.getElementById('userNameNav').textContent=name;
   document.getElementById('userAv').textContent=name[0].toUpperCase();
-  const auth=document.getElementById('authScreen');
+  const auth2=document.getElementById('authScreen');
   const dash=document.getElementById('dashScreen');
-  auth.style.display='none';auth.classList.remove('active');
-  dash.classList.add('active','screen-enter');
-  dash.style.display='flex';
-  // Show ticker
-  document.getElementById('priceTicker').classList.add('visible');
-  startTicker();
-  setTimeout(()=>{ document.querySelectorAll('.reveal').forEach(el=>{ if(!el.classList.contains('shown')) revObs.observe(el); }); },100);
-  window.scrollTo(0,0);
-  toast(`🌿 Welcome to your dashboard, ${name}!`);
-}
+  const title=email?`Welcome back, ${name}! 🌾`:`Welcome, ${name}! 🌱`;
+  showSuccess(title,'Loading your dashboard…',()=>{
+    auth2.style.display='none';auth2.classList.remove('active');
+    dash.classList.add('active','screen-enter');
+    dash.style.display='flex';
+    document.getElementById('priceTicker').classList.add('visible');
+    startTicker();
+    setTimeout(()=>{document.querySelectorAll('.reveal').forEach(el=>{if(!el.classList.contains('shown'))revObs.observe(el);});},100);
+    window.scrollTo(0,0);
+    toast(`🌿 Welcome, ${name}!`);
+  });
+};
 
 function handleLogout(){
+  dashEntered=false;
   const dash=document.getElementById('dashScreen');
-  const auth=document.getElementById('authScreen');
+  const auth2=document.getElementById('authScreen');
+  window._firebaseLogout();
   dash.classList.remove('active','screen-enter');
   dash.style.display='none';
-  auth.style.display='flex';auth.classList.add('active');
+  auth2.style.display='flex';auth2.classList.add('active');
   document.getElementById('priceTicker').classList.remove('visible');
   if(panelOpen)togglePricePanel();
   document.getElementById('result-section').classList.remove('visible');
   document.getElementById('result-section').style.display='none';
-  toast('👋 You have been signed out.');
+  hidePhonePanel();
+  toast('👋 Signed out successfully.');
   window.scrollTo(0,0);
 }
 
-/* ══════════════════════════════════════
+/* ════════════════════════════════════════
    MAP INTERACTIONS
-══════════════════════════════════════ */
+════════════════════════════════════════ */
 const dashMapPaths=document.querySelectorAll('.dsp');
 const mapLabel=document.getElementById('mapLabel');
-
 dashMapPaths.forEach(path=>{
-  path.addEventListener('mouseenter',function(e){
-    const sn=this.dataset.state;
-    if(sn){
-      mapLabel.textContent=sn+(regions[sn]?` · ${regions[sn].temp}°C`:'');
-      mapLabel.classList.add('show');
-      mapLabel.style.left=(e.offsetX+10)+'px';mapLabel.style.top=(e.offsetY-30)+'px';
-    }
-  });
+  path.addEventListener('mouseenter',function(e){const sn=this.dataset.state;if(sn){mapLabel.textContent=sn+(regions[sn]?` · ${regions[sn].temp}°C`:'');mapLabel.classList.add('show');mapLabel.style.left=(e.offsetX+10)+'px';mapLabel.style.top=(e.offsetY-30)+'px';}});
   path.addEventListener('mousemove',function(e){mapLabel.style.left=(e.offsetX+10)+'px';mapLabel.style.top=(e.offsetY-30)+'px';});
   path.addEventListener('mouseleave',function(){mapLabel.classList.remove('show');});
-  path.addEventListener('click',function(){
-    const sn=this.dataset.state;if(!sn)return;
-    const btn=document.querySelector(`.r-btn[data-region="${sn}"]`);
-    if(btn){selRegion(btn);btn.scrollIntoView({behavior:'smooth',block:'nearest'});}
-    document.querySelectorAll('.dsp').forEach(p=>p.classList.remove('d-active'));
-    this.classList.add('d-active');
-    mapLabel.classList.remove('show');
-    toast(`📍 Region: ${sn}`);
-  });
+  path.addEventListener('click',function(){const sn=this.dataset.state;if(!sn)return;const btn=document.querySelector(`.r-btn[data-region="${sn}"]`);if(btn){selRegion(btn);btn.scrollIntoView({behavior:'smooth',block:'nearest'});}document.querySelectorAll('.dsp').forEach(p=>p.classList.remove('d-active'));this.classList.add('d-active');mapLabel.classList.remove('show');toast(`📍 Region: ${sn}`);});
 });
 
-/* ══════════════════════════════════════
+/* ════════════════════════════════════════
    DASHBOARD SELECTIONS
-══════════════════════════════════════ */
-function selRegion(btn){
-  document.querySelectorAll('.r-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  activeRegion=btn.dataset.region;
-  const d=regions[activeRegion]||{temp:28,hum:65,rain:100};
-  setSl('temp',d.temp);setSl('hum',d.hum);setSl('rain',d.rain);
-  document.querySelectorAll('.dsp').forEach(p=>{p.classList.toggle('d-active',p.dataset.state===activeRegion);});
-  toast(`📍 Region: ${activeRegion}`);
-}
-function selSeason(btn){
-  document.querySelectorAll('.seas-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');activeSeason=btn.dataset.season;
-  toast(`📅 Season: ${activeSeason}`);
-}
-function selSoil(btn){
-  document.querySelectorAll('.soil-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');activeSoil=btn.dataset.soil;
-  toast(`🌍 Soil: ${activeSoil}`);
-}
+════════════════════════════════════════ */
+function selRegion(btn){document.querySelectorAll('.r-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeRegion=btn.dataset.region;const d=regions[activeRegion]||{temp:28,hum:65,rain:100};setSl('temp',d.temp);setSl('hum',d.hum);setSl('rain',d.rain);document.querySelectorAll('.dsp').forEach(p=>{p.classList.toggle('d-active',p.dataset.state===activeRegion);});toast(`📍 Region: ${activeRegion}`);}
+function selSeason(btn){document.querySelectorAll('.seas-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeSeason=btn.dataset.season;toast(`📅 Season: ${activeSeason}`);}
+function selSoil(btn){document.querySelectorAll('.soil-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeSoil=btn.dataset.soil;toast(`🌍 Soil: ${activeSoil}`);}
 function setSl(id,val){const sl=document.getElementById('sl-'+id);sl.value=val;updSl(id,sl);}
-function updSl(id,el){
-  const min=parseFloat(el.min),max=parseFloat(el.max),val=parseFloat(el.value);
-  el.style.setProperty('--pct',((val-min)/(max-min)*100).toFixed(1)+'%');
-  document.getElementById('val-'+id).textContent=val;
-}
+function updSl(id,el){const min=parseFloat(el.min),max=parseFloat(el.max),val=parseFloat(el.value);el.style.setProperty('--pct',((val-min)/(max-min)*100).toFixed(1)+'%');document.getElementById('val-'+id).textContent=val;}
 ['N','P','K','ph','temp','hum','rain'].forEach(id=>{const el=document.getElementById('sl-'+id);if(el)updSl(id,el);});
 
-/* ══════════════════════════════════════
+/* ════════════════════════════════════════
    PREDICTION ENGINE
-══════════════════════════════════════ */
+════════════════════════════════════════ */
 function mockPredict(N,P,K,ph,temp,hum,rain,season,soil){
-  if(season==='Rabi'){if(temp<20)return'wheat';if(ph>7)return'chickpea';if(N>60)return'wheat';return'lentil';}
-  if(season==='Zaid'){if(hum>70)return'watermelon';if(temp>30)return'muskmelon';return'maize';}
+  if(season.includes('Rabi')||season.includes('Winter')){if(temp<20)return'wheat';if(ph>7)return'chickpea';if(N>60)return'wheat';return'lentil';}
+  if(season.includes('Zaid')||season.includes('Summer')){if(hum>70)return'watermelon';if(temp>30)return'muskmelon';return'maize';}
   if(hum>80&&rain>200)return'rice';
   if(temp>30&&hum<70&&N>60)return'cotton';
   if(rain>200&&temp>27)return'banana';
@@ -1352,18 +1165,15 @@ async function runPrediction(){
   const N=+document.getElementById('sl-N').value,P=+document.getElementById('sl-P').value,K=+document.getElementById('sl-K').value;
   const ph=+document.getElementById('sl-ph').value,temp=+document.getElementById('sl-temp').value;
   const hum=+document.getElementById('sl-hum').value,rain=+document.getElementById('sl-rain').value;
-
   document.getElementById('result-section').classList.remove('visible');
   document.getElementById('result-section').style.display='none';
   document.getElementById('dLoader').classList.add('active');
   await new Promise(r=>setTimeout(r,1800));
   document.getElementById('dLoader').classList.remove('active');
-
   const crop=mockPredict(N,P,K,ph,temp,hum,rain,activeSeason,activeSoil);
   const conf=Math.floor(Math.random()*12)+85;
   const info=getCropInfo(crop);
   const cDisp=crop.charAt(0).toUpperCase()+crop.slice(1);
-
   document.getElementById('resCropName').textContent=cDisp+' '+info.emoji;
   document.getElementById('confNum').textContent=conf+'%';
   document.getElementById('m-temp').innerHTML=`${temp}<span class="met-u">°C</span>`;
@@ -1377,52 +1187,33 @@ async function runPrediction(){
   document.getElementById('aiDesc').textContent=info.ai;
   document.getElementById('prevCropName').textContent=cDisp;
   document.getElementById('insCropName').textContent=cDisp;
-
   const rs=document.getElementById('result-section');
   rs.style.display='block';rs.classList.add('visible');
   rs.querySelectorAll('.reveal').forEach(el=>el.classList.add('shown'));
   setTimeout(()=>{document.getElementById('confFill').style.width=conf+'%';},300);
   rs.scrollIntoView({behavior:'smooth',block:'start'});
-
   toast(`✅ Recommendation: ${cDisp}`);
   burst();
-
   document.getElementById('measList').innerHTML=`<div class="ai-ld"><div class="ai-ld-ring"></div><div class="ai-ld-txt">Generating preventive measures with Claude AI…</div></div>`;
   document.getElementById('insecList').innerHTML=`<div class="ai-ld"><div class="ai-ld-ring"></div><div class="ai-ld-txt">Fetching insecticide recommendations…</div></div>`;
-
   try{
     const ai=await fetchAIDetails(cDisp,activeRegion,activeSeason,activeSoil,temp,hum,rain);
     document.getElementById('measList').innerHTML=renderMeasures(ai.preventive_measures);
     document.getElementById('insecList').innerHTML=renderInsec(ai.insecticides);
     toast('🧠 AI analysis complete!');
-  } catch(e){
+  }catch(e){
     document.getElementById('measList').innerHTML=renderMeasures(fbMeasures());
     document.getElementById('insecList').innerHTML=renderInsec(fbInsec());
   }
 }
 
-/* ══════════════════════════════════════
-   BURST PARTICLES
-══════════════════════════════════════ */
-function burst(){
-  const items=['🌾','🌱','🌿','✨','🍃','💫','🌻','⭐'];
-  for(let i=0;i<28;i++){
-    const el=document.createElement('div');
-    el.className='f-elem';el.textContent=items[Math.floor(Math.random()*items.length)];
-    el.style.cssText=`font-size:${16+Math.random()*24}px;left:${Math.random()*100}vw;bottom:0;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*1.2}s;position:absolute;`;
-    gc.appendChild(el);setTimeout(()=>el.remove(),6000);
-  }
-}
-
-function toast(msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);
-}
-
-const revObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('shown');revObs.unobserve(e.target);}});
-},{threshold:0.1});
+/* ════════════════════════════════════════
+   BURST & TOAST & REVEAL
+════════════════════════════════════════ */
+function burst(){const items=['🌾','🌱','🌿','✨','🍃','💫','🌻','⭐'];for(let i=0;i<28;i++){const el=document.createElement('div');el.className='f-elem';el.textContent=items[Math.floor(Math.random()*items.length)];el.style.cssText=`font-size:${16+Math.random()*24}px;left:${Math.random()*100}vw;bottom:0;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*1.2}s;position:absolute;`;gc.appendChild(el);setTimeout(()=>el.remove(),6000);}}
+function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+window.toast=toast;
+const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('shown');revObs.unobserve(e.target);}});},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
 </script>
 </body>
