@@ -166,9 +166,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--warm);color:var(--text-da
 .sw-row{text-align:center;font-size:13px;color:var(--text-light);}
 .sw-lnk{color:var(--forest);font-weight:700;cursor:pointer;border-bottom:1px solid rgba(45,90,39,0.3);padding-bottom:1px;transition:color 0.2s;}
 .sw-lnk:hover{color:var(--leaf);}
+/* FIX: Both views use position:relative so they stack properly in the wrapper */
 .fv{transition:opacity 0.32s ease,transform 0.32s cubic-bezier(0.16,1,0.3,1);}
-.fv.hidden{opacity:0;transform:translateX(16px);position:absolute;pointer-events:none;}
-.fv.visible{opacity:1;transform:none;}
+.fv.hidden{opacity:0;transform:translateX(16px);position:absolute;pointer-events:none;width:100%;}
+.fv.visible{opacity:1;transform:none;position:relative;}
+/* FIX: The form-view wrapper needs relative positioning */
+.form-view-wrapper{position:relative;min-height:200px;}
 .str-track{height:3px;border-radius:10px;background:rgba(106,171,94,0.12);overflow:hidden;margin-top:6px;}
 .str-fill{height:100%;border-radius:10px;width:0;transition:width 0.4s ease,background 0.4s ease;}
 .str-lbl{font-size:11px;margin-top:3px;color:var(--text-light);}
@@ -363,7 +366,7 @@ footer strong{color:var(--forest);}
 </div>
 <div id="globalCanvas"></div>
 
-<!-- reCAPTCHA container (invisible, needed for Phone OTP) -->
+<!-- reCAPTCHA container (invisible) -->
 <div id="recaptcha-container"></div>
 
 <div class="succ-ov" id="succOv">
@@ -460,101 +463,106 @@ footer strong{color:var(--forest);}
         <button class="a-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
       </div>
 
-      <!-- ── LOGIN VIEW ── -->
-      <div class="fv visible" id="loginView" style="position:relative;">
-        <div class="fb-err" id="loginErr">⚠ <span id="loginErrMsg">Error</span></div>
-        <div class="f-group">
-          <div class="f-field">
-            <label class="f-lbl">Email Address</label>
-            <div class="f-wrap"><span class="f-ico">📧</span><input type="email" id="lEmail" placeholder="you@farm.in"></div>
-            <div class="f-err" id="err-lEmail">⚠ Enter a valid email</div>
-          </div>
-          <div class="f-field">
-            <label class="f-lbl">Password</label>
-            <div class="f-wrap"><span class="f-ico">🔒</span><input type="password" id="lPwd" placeholder="Your secret key"><button class="pwd-eye" onclick="toggleEye('lPwd',this)">👁</button></div>
-            <div class="f-err" id="err-lPwd">⚠ Password must be at least 6 characters</div>
-          </div>
-        </div>
-        <div class="extras-r">
-          <label class="chk-wrap" onclick="toggleChk('remChk')">
-            <div class="chk-box" id="remChk"></div>
-            <span class="chk-lbl">Remember me</span>
-          </label>
-          <span class="fgt-lnk" onclick="handleForgot()">Forgot password?</span>
-        </div>
-        <button class="sub-btn" id="loginBtn" onclick="handleLogin()"><span class="bt">🚀 &nbsp;Sign In</span></button>
-        <div class="or-r"><div class="or-l"></div><span class="or-t">or continue with</span><div class="or-l"></div></div>
-        <div class="soc-r">
-          <button class="soc-b" onclick="googleLogin()"><span>🌐</span> Google</button>
-          <button class="soc-b" onclick="showPhonePanel()"><span>📱</span> Phone OTP</button>
-        </div>
-        <!-- Phone OTP sub-panel -->
-        <div class="otp-panel" id="phonePanel">
-          <div class="fb-err" id="phoneErr">⚠ <span id="phoneErrMsg">Error</span></div>
-          <div class="f-field">
-            <label class="f-lbl">Phone Number</label>
-            <div class="phone-input-wrap">
-              <input class="phone-prefix" type="text" value="+91" id="phonePrefix">
-              <div class="f-wrap" style="flex:1"><span class="f-ico">📱</span><input type="tel" id="phoneNum" placeholder="98765 43210" style="padding-left:41px;width:100%;padding:12px 13px 12px 41px;border:1.5px solid rgba(106,171,94,0.25);border-radius:11px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;"></div>
-            </div>
-          </div>
-          <button class="sub-btn" id="sendOtpBtn" onclick="sendOTP()" style="margin-bottom:0"><span class="bt">📤 Send OTP</span></button>
-          <div id="otpVerifyWrap" style="display:none;">
-            <label class="f-lbl" style="margin-bottom:8px;text-align:center;display:block;">Enter 6-digit OTP</label>
-            <div class="otp-boxes">
-              <input class="otp-box" maxlength="1" oninput="otpMove(this,0)" id="otp0">
-              <input class="otp-box" maxlength="1" oninput="otpMove(this,1)" id="otp1">
-              <input class="otp-box" maxlength="1" oninput="otpMove(this,2)" id="otp2">
-              <input class="otp-box" maxlength="1" oninput="otpMove(this,3)" id="otp3">
-              <input class="otp-box" maxlength="1" oninput="otpMove(this,4)" id="otp4">
-              <input class="otp-box" maxlength="1" oninput="otpMove(this,5)" id="otp5">
-            </div>
-            <button class="sub-btn" id="verifyOtpBtn" onclick="verifyOTP()" style="margin-top:14px"><span class="bt">✅ Verify & Sign In</span></button>
-          </div>
-          <button style="background:none;border:none;color:var(--text-light);font-size:12px;cursor:pointer;margin-top:4px;font-family:'DM Sans',sans-serif;" onclick="hidePhonePanel()">← Back to email login</button>
-        </div>
-        <div class="sw-row">New to AgroSense? <span class="sw-lnk" onclick="switchAuthTab('signup')">Create free account →</span></div>
-      </div>
+      <!-- FIX: Wrap both views in a relative container so absolute hidden view doesn't collapse layout -->
+      <div class="form-view-wrapper">
 
-      <!-- ── SIGNUP VIEW ── -->
-      <div class="fv hidden" id="signupView">
-        <div class="fb-err" id="signupErr">⚠ <span id="signupErrMsg">Error</span></div>
-        <div class="f-group">
-          <div class="f-row">
+        <!-- ── LOGIN VIEW ── -->
+        <div class="fv visible" id="loginView">
+          <div class="fb-err" id="loginErr">⚠ <span id="loginErrMsg">Error</span></div>
+          <div class="f-group">
             <div class="f-field">
-              <label class="f-lbl">First Name</label>
-              <div class="f-wrap"><span class="f-ico">👤</span><input type="text" id="sFname" placeholder="Ravi"></div>
-              <div class="f-err" id="err-sFname">⚠ Required</div>
+              <label class="f-lbl">Email Address</label>
+              <div class="f-wrap"><span class="f-ico">📧</span><input type="email" id="lEmail" placeholder="you@farm.in"></div>
+              <div class="f-err" id="err-lEmail">⚠ Enter a valid email</div>
             </div>
             <div class="f-field">
-              <label class="f-lbl">Last Name</label>
-              <div class="f-wrap"><span class="f-ico">👤</span><input type="text" id="sLname" placeholder="Kumar"></div>
+              <label class="f-lbl">Password</label>
+              <div class="f-wrap"><span class="f-ico">🔒</span><input type="password" id="lPwd" placeholder="Your secret key"><button class="pwd-eye" onclick="toggleEye('lPwd',this)">👁</button></div>
+              <div class="f-err" id="err-lPwd">⚠ Password must be at least 6 characters</div>
             </div>
           </div>
-          <div class="f-field">
-            <label class="f-lbl">Email Address</label>
-            <div class="f-wrap"><span class="f-ico">📧</span><input type="email" id="sEmail" placeholder="you@farm.in"></div>
-            <div class="f-err" id="err-sEmail">⚠ Enter a valid email</div>
+          <div class="extras-r">
+            <label class="chk-wrap" onclick="toggleChk('remChk')">
+              <div class="chk-box" id="remChk"></div>
+              <span class="chk-lbl">Remember me</span>
+            </label>
+            <span class="fgt-lnk" onclick="handleForgot()">Forgot password?</span>
           </div>
-          <div class="f-field">
-            <label class="f-lbl">Password</label>
-            <div class="f-wrap"><span class="f-ico">🔒</span><input type="password" id="sPwd" placeholder="Min 8 characters" oninput="updateStr(this.value)"><button class="pwd-eye" onclick="toggleEye('sPwd',this)">👁</button></div>
-            <div class="str-track"><div class="str-fill" id="strFill"></div></div>
-            <div class="str-lbl" id="strLbl">Enter a password</div>
-            <div class="f-err" id="err-sPwd">⚠ At least 8 characters</div>
+          <button class="sub-btn" id="loginBtn" onclick="handleLogin()"><span class="bt">🚀 &nbsp;Sign In</span></button>
+          <div class="or-r"><div class="or-l"></div><span class="or-t">or continue with</span><div class="or-l"></div></div>
+          <div class="soc-r">
+            <button class="soc-b" onclick="googleLogin()"><span>🌐</span> Google</button>
+            <button class="soc-b" onclick="showPhonePanel()"><span>📱</span> Phone OTP</button>
           </div>
+          <!-- Phone OTP sub-panel -->
+          <div class="otp-panel" id="phonePanel">
+            <div class="fb-err" id="phoneErr">⚠ <span id="phoneErrMsg">Error</span></div>
+            <div class="f-field">
+              <label class="f-lbl">Phone Number</label>
+              <div class="phone-input-wrap">
+                <input class="phone-prefix" type="text" value="+91" id="phonePrefix">
+                <div class="f-wrap" style="flex:1"><span class="f-ico">📱</span><input type="tel" id="phoneNum" placeholder="98765 43210" style="padding-left:41px;width:100%;padding:12px 13px 12px 41px;border:1.5px solid rgba(106,171,94,0.25);border-radius:11px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-dark);outline:none;"></div>
+              </div>
+            </div>
+            <button class="sub-btn" id="sendOtpBtn" onclick="sendOTP()" style="margin-bottom:0"><span class="bt">📤 Send OTP</span></button>
+            <div id="otpVerifyWrap" style="display:none;">
+              <label class="f-lbl" style="margin-bottom:8px;text-align:center;display:block;">Enter 6-digit OTP</label>
+              <div class="otp-boxes">
+                <input class="otp-box" maxlength="1" oninput="otpMove(this,0)" id="otp0">
+                <input class="otp-box" maxlength="1" oninput="otpMove(this,1)" id="otp1">
+                <input class="otp-box" maxlength="1" oninput="otpMove(this,2)" id="otp2">
+                <input class="otp-box" maxlength="1" oninput="otpMove(this,3)" id="otp3">
+                <input class="otp-box" maxlength="1" oninput="otpMove(this,4)" id="otp4">
+                <input class="otp-box" maxlength="1" oninput="otpMove(this,5)" id="otp5">
+              </div>
+              <button class="sub-btn" id="verifyOtpBtn" onclick="verifyOTP()" style="margin-top:14px"><span class="bt">✅ Verify & Sign In</span></button>
+            </div>
+            <button style="background:none;border:none;color:var(--text-light);font-size:12px;cursor:pointer;margin-top:4px;font-family:'DM Sans',sans-serif;" onclick="hidePhonePanel()">← Back to email login</button>
+          </div>
+          <div class="sw-row">New to AgroSense? <span class="sw-lnk" onclick="switchAuthTab('signup')">Create free account →</span></div>
         </div>
-        <div class="terms-w">
-          <div class="chk-box" id="termsChk" onclick="toggleChk('termsChk')"></div>
-          <span>I agree to the <span class="tl">Terms of Service</span> and <span class="tl">Privacy Policy</span></span>
+
+        <!-- ── SIGNUP VIEW ── -->
+        <div class="fv hidden" id="signupView">
+          <div class="fb-err" id="signupErr">⚠ <span id="signupErrMsg">Error</span></div>
+          <div class="f-group">
+            <div class="f-row">
+              <div class="f-field">
+                <label class="f-lbl">First Name</label>
+                <div class="f-wrap"><span class="f-ico">👤</span><input type="text" id="sFname" placeholder="Ravi"></div>
+                <div class="f-err" id="err-sFname">⚠ Required</div>
+              </div>
+              <div class="f-field">
+                <label class="f-lbl">Last Name</label>
+                <div class="f-wrap"><span class="f-ico">👤</span><input type="text" id="sLname" placeholder="Kumar"></div>
+              </div>
+            </div>
+            <div class="f-field">
+              <label class="f-lbl">Email Address</label>
+              <div class="f-wrap"><span class="f-ico">📧</span><input type="email" id="sEmail" placeholder="you@farm.in"></div>
+              <div class="f-err" id="err-sEmail">⚠ Enter a valid email</div>
+            </div>
+            <div class="f-field">
+              <label class="f-lbl">Password</label>
+              <div class="f-wrap"><span class="f-ico">🔒</span><input type="password" id="sPwd" placeholder="Min 8 characters" oninput="updateStr(this.value)"><button class="pwd-eye" onclick="toggleEye('sPwd',this)">👁</button></div>
+              <div class="str-track"><div class="str-fill" id="strFill"></div></div>
+              <div class="str-lbl" id="strLbl">Enter a password</div>
+              <div class="f-err" id="err-sPwd">⚠ At least 8 characters</div>
+            </div>
+          </div>
+          <div class="terms-w">
+            <div class="chk-box" id="termsChk" onclick="toggleChk('termsChk')"></div>
+            <span>I agree to the <span class="tl">Terms of Service</span> and <span class="tl">Privacy Policy</span></span>
+          </div>
+          <button class="sub-btn" id="signupBtn" onclick="handleSignup()"><span class="bt">🌱 &nbsp;Create Account</span></button>
+          <div class="or-r"><div class="or-l"></div><span class="or-t">or sign up with</span><div class="or-l"></div></div>
+          <div class="soc-r">
+            <button class="soc-b" onclick="googleLogin()"><span>🌐</span> Google</button>
+          </div>
+          <div class="sw-row">Already have an account? <span class="sw-lnk" onclick="switchAuthTab('login')">Sign in →</span></div>
         </div>
-        <button class="sub-btn" id="signupBtn" onclick="handleSignup()"><span class="bt">🌱 &nbsp;Create Account</span></button>
-        <div class="or-r"><div class="or-l"></div><span class="or-t">or sign up with</span><div class="or-l"></div></div>
-        <div class="soc-r">
-          <button class="soc-b" onclick="googleLogin()"><span>🌐</span> Google</button>
-        </div>
-        <div class="sw-row">Already have an account? <span class="sw-lnk" onclick="switchAuthTab('login')">Sign in →</span></div>
-      </div>
+
+      </div><!-- /.form-view-wrapper -->
     </div>
   </div>
 </div>
@@ -763,19 +771,24 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+getAnalytics(app);
 const auth = getAuth(app);
 
 let confirmationResult = null;
 let recaptchaVerifier = null;
 
-/* ── Helpers ── */
+/* ── Auth state flag — controls whether onAuthStateChanged should act ── */
+// FIX: Use a tri-state: 'initial' | 'active' | 'loggingOut'
+// This prevents onAuthStateChanged from re-entering the dashboard during logout
+let authFlowState = 'initial'; // 'initial' = first load, 'active' = logged in, 'loggingOut' = mid-logout
+
 function fireErrMsg(code) {
   const map = {
     'auth/invalid-email': 'Invalid email address.',
     'auth/user-disabled': 'This account has been disabled.',
     'auth/user-not-found': 'No account found with this email.',
     'auth/wrong-password': 'Incorrect password. Try again.',
+    'auth/invalid-credential': 'Incorrect email or password. Try again.',
     'auth/email-already-in-use': 'Email already registered. Please sign in.',
     'auth/weak-password': 'Password too weak — use at least 6 characters.',
     'auth/too-many-requests': 'Too many attempts. Please wait and try again.',
@@ -786,12 +799,14 @@ function fireErrMsg(code) {
     'auth/code-expired': 'OTP expired. Please resend.',
     'auth/network-request-failed': 'Network error. Check your connection.',
     'auth/operation-not-allowed': 'This sign-in method is not enabled in Firebase Console.',
+    'auth/missing-password': 'Please enter your password.',
   };
-  return map[code] || 'Authentication error. Please try again.';
+  return map[code] || `Authentication error (${code}). Please try again.`;
 }
 
 function showFBErr(panelId, msgId, msg) {
   const panel = document.getElementById(panelId);
+  if (!panel) return;
   document.getElementById(msgId).textContent = msg;
   panel.classList.add('show');
   setTimeout(() => panel.classList.remove('show'), 6000);
@@ -801,9 +816,11 @@ function hideFBErr(panelId) {
   document.getElementById(panelId)?.classList.remove('show');
 }
 
-/* ── Auth state listener — auto-restore session ── */
+/* ── FIX: onAuthStateChanged — only act when appropriate ── */
 onAuthStateChanged(auth, (user) => {
-  if (user) {
+  if (authFlowState === 'loggingOut') return; // ignore the null event from logout
+  if (user && authFlowState !== 'active') {
+    authFlowState = 'active';
     const name = user.displayName || user.email?.split('@')[0] || 'Farmer';
     window._enterDash(name, user.email || '');
   }
@@ -815,7 +832,7 @@ window._firebaseLogin = async function(email, pwd, remember) {
   try {
     await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
     await signInWithEmailAndPassword(auth, email, pwd);
-    // onAuthStateChanged handles the redirect
+    // onAuthStateChanged picks this up and calls _enterDash
   } catch (e) {
     document.getElementById('loginBtn').classList.remove('loading');
     showFBErr('loginErr', 'loginErrMsg', fireErrMsg(e.code));
@@ -828,7 +845,7 @@ window._firebaseSignup = async function(email, pwd, displayName) {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pwd);
     await updateProfile(cred.user, { displayName });
-    // onAuthStateChanged handles redirect
+    // onAuthStateChanged picks this up
   } catch (e) {
     document.getElementById('signupBtn').classList.remove('loading');
     showFBErr('signupErr', 'signupErrMsg', fireErrMsg(e.code));
@@ -841,9 +858,8 @@ window._firebaseGoogle = async function() {
   const provider = new GoogleAuthProvider();
   try {
     await signInWithPopup(auth, provider);
-    // onAuthStateChanged handles redirect
   } catch (e) {
-    if (e.code !== 'auth/popup-closed-by-user') {
+    if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
       showFBErr('loginErr', 'loginErrMsg', fireErrMsg(e.code));
     }
   }
@@ -859,21 +875,27 @@ window._firebaseForgot = async function(email) {
   }
 };
 
-/* ── Logout ── */
+/* ── FIX: Logout — set state BEFORE signOut so onAuthStateChanged ignores the null event ── */
 window._firebaseLogout = async function() {
+  authFlowState = 'loggingOut';
   await signOut(auth);
+  // After signOut completes, reset to initial so next login works
+  authFlowState = 'initial';
 };
 
 /* ── Phone OTP: Send ── */
 window._sendPhoneOTP = async function(phoneNumber) {
   hideFBErr('phoneErr');
   try {
-    if (!recaptchaVerifier) {
-      recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: () => {}
-      });
+    // FIX: Always clear and recreate recaptcha to avoid stale verifier errors
+    if (recaptchaVerifier) {
+      try { recaptchaVerifier.clear(); } catch(_) {}
+      recaptchaVerifier = null;
     }
+    recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'invisible',
+      callback: () => {}
+    });
     confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
     document.getElementById('sendOtpBtn').classList.remove('loading');
     document.getElementById('otpVerifyWrap').style.display = 'block';
@@ -882,9 +904,8 @@ window._sendPhoneOTP = async function(phoneNumber) {
   } catch (e) {
     document.getElementById('sendOtpBtn').classList.remove('loading');
     showFBErr('phoneErr', 'phoneErrMsg', fireErrMsg(e.code));
-    // Reset recaptcha on error
     if (recaptchaVerifier) {
-      recaptchaVerifier.clear();
+      try { recaptchaVerifier.clear(); } catch(_) {}
       recaptchaVerifier = null;
     }
   }
@@ -933,7 +954,6 @@ const MANDI_BASE=[
   {crop:"Coconut",emoji:"🥥",base:1640,unit:"₹/qtl",min:1200,max:2200},
 ];
 let priceData=MANDI_BASE.map(c=>({...c,price:c.base,prev:c.base,history:Array.from({length:12},()=>c.base+(Math.random()-0.5)*c.base*0.06)}));
-function rndFloat(a,b){return a+Math.random()*(b-a);}
 function fluctuatePrices(){priceData=priceData.map(c=>{const delta=(Math.random()-0.46)*c.base*0.012;const newP=Math.max(c.min,Math.min(c.max,c.price+delta));return{...c,prev:c.price,price:Math.round(newP),history:[...c.history.slice(1),Math.round(newP)]};});}
 function pct(c){return((c.price-c.prev)/c.prev*100);}
 function dirClass(c){const p=pct(c);return p>0?'up':p<0?'dn':'fl';}
@@ -976,7 +996,22 @@ setTimeout(()=>{setInterval(()=>{if(authHL)authHL.classList.remove('hl');authHL=
 /* ════════════════════════════════════════
    AUTH FORM HELPERS
 ════════════════════════════════════════ */
-function switchAuthTab(tab){const lv=document.getElementById('loginView'),sv=document.getElementById('signupView');const tl=document.getElementById('tabLogin'),ts=document.getElementById('tabSignup');const tt=document.getElementById('authTitle'),ts2=document.getElementById('authSub');if(tab==='login'){lv.className='fv visible';sv.className='fv hidden';tl.classList.add('active');ts.classList.remove('active');tt.innerHTML=`Welcome back,<br><em style="font-style:italic;color:var(--forest)">Farmer</em>`;ts2.textContent='Sign in to access your AI crop intelligence dashboard.';}else{sv.className='fv visible';lv.className='fv hidden';ts.classList.add('active');tl.classList.remove('active');tt.innerHTML=`Join <em style="font-style:italic;color:var(--forest)">AgroSense</em>`;ts2.textContent='Create your free account and start growing smarter today.';}}
+function switchAuthTab(tab){
+  const lv=document.getElementById('loginView'),sv=document.getElementById('signupView');
+  const tl=document.getElementById('tabLogin'),ts=document.getElementById('tabSignup');
+  const tt=document.getElementById('authTitle'),ts2=document.getElementById('authSub');
+  if(tab==='login'){
+    lv.className='fv visible';sv.className='fv hidden';
+    tl.classList.add('active');ts.classList.remove('active');
+    tt.innerHTML=`Welcome back,<br><em style="font-style:italic;color:var(--forest)">Farmer</em>`;
+    ts2.textContent='Sign in to access your AI crop intelligence dashboard.';
+  }else{
+    sv.className='fv visible';lv.className='fv hidden';
+    ts.classList.add('active');tl.classList.remove('active');
+    tt.innerHTML=`Join <em style="font-style:italic;color:var(--forest)">AgroSense</em>`;
+    ts2.textContent='Create your free account and start growing smarter today.';
+  }
+}
 function toggleEye(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
 function toggleChk(id){document.getElementById(id).classList.toggle('on');}
 function showFErr(id,show){const el=document.getElementById(id);if(el)el.className=show?'f-err show':'f-err';}
@@ -984,7 +1019,17 @@ function validEmail(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
 
 function updateStr(val){const fill=document.getElementById('strFill'),lbl=document.getElementById('strLbl');let s=0;if(val.length>=8)s++;if(/[A-Z]/.test(val))s++;if(/[0-9]/.test(val))s++;if(/[^A-Za-z0-9]/.test(val))s++;const c=[{w:'0%',bg:'transparent',t:'Enter a password'},{w:'25%',bg:'#e05252',t:'Weak — keep going'},{w:'50%',bg:'#e0a052',t:'Fair — add numbers'},{w:'75%',bg:'#c9a84c',t:'Good — almost there!'},{w:'100%',bg:'#6aab5e',t:'Strong 💪'}][s];fill.style.width=c.w;fill.style.background=c.bg;lbl.textContent=c.t;lbl.style.color=c.bg==='transparent'?'var(--text-light)':c.bg;}
 
-/* ── Login with Firebase ── */
+/* ── FIX: Guard — wait for Firebase functions to be defined before calling ── */
+function waitForFn(name, cb, args) {
+  if (typeof window[name] === 'function') {
+    window[name](...args);
+  } else {
+    // Firebase module hasn't attached the function yet — retry in 80ms
+    setTimeout(() => waitForFn(name, cb, args), 80);
+  }
+}
+
+/* ── Login ── */
 function handleLogin(){
   const email=document.getElementById('lEmail').value.trim();
   const pwd=document.getElementById('lPwd').value;
@@ -994,10 +1039,10 @@ function handleLogin(){
   if(!validEmail(email)||pwd.length<6)return;
   const btn=document.getElementById('loginBtn');
   btn.classList.add('loading');
-  window._firebaseLogin(email,pwd,remember);
+  waitForFn('_firebaseLogin', null, [email, pwd, remember]);
 }
 
-/* ── Signup with Firebase ── */
+/* ── Signup ── */
 function handleSignup(){
   const fname=document.getElementById('sFname').value.trim();
   const lname=document.getElementById('sLname').value.trim();
@@ -1012,23 +1057,23 @@ function handleSignup(){
   const displayName=(fname+' '+lname).trim();
   const btn=document.getElementById('signupBtn');
   btn.classList.add('loading');
-  window._firebaseSignup(email,pwd,displayName);
+  waitForFn('_firebaseSignup', null, [email, pwd, displayName]);
 }
 
-/* ── Google Login ── */
+/* ── Google ── */
 function googleLogin(){
-  window._firebaseGoogle();
+  waitForFn('_firebaseGoogle', null, []);
 }
 
 /* ── Forgot Password ── */
 function handleForgot(){
   const email=document.getElementById('lEmail').value.trim();
   if(!validEmail(email)){showFErr('err-lEmail',true);toast('📧 Enter your email first.');return;}
-  window._firebaseForgot(email);
+  waitForFn('_firebaseForgot', null, [email]);
 }
 
 /* ── Phone OTP ── */
-function showPhonePanel(){document.getElementById('phonePanel').style.display='';document.getElementById('phonePanel').className='otp-panel active';}
+function showPhonePanel(){document.getElementById('phonePanel').className='otp-panel active';}
 function hidePhonePanel(){document.getElementById('phonePanel').className='otp-panel';document.getElementById('otpVerifyWrap').style.display='none';}
 function sendOTP(){
   const prefix=document.getElementById('phonePrefix').value.trim();
@@ -1037,7 +1082,7 @@ function sendOTP(){
   const full=prefix+num;
   const btn=document.getElementById('sendOtpBtn');
   btn.classList.add('loading');
-  window._sendPhoneOTP(full);
+  waitForFn('_sendPhoneOTP', null, [full]);
 }
 function otpMove(el,idx){
   if(el.value.length===1&&idx<5)document.getElementById('otp'+(idx+1)).focus();
@@ -1048,11 +1093,11 @@ function verifyOTP(){
   if(code.length!==6){toast('⚠ Enter all 6 digits.');return;}
   const btn=document.getElementById('verifyOtpBtn');
   btn.classList.add('loading');
-  window._verifyPhoneOTP(code);
+  waitForFn('_verifyPhoneOTP', null, [code]);
 }
 
 /* ════════════════════════════════════════
-   SCREEN NAVIGATION (called by Firebase module)
+   SCREEN NAVIGATION
 ════════════════════════════════════════ */
 function showSuccess(title,sub,onDone){
   const ov=document.getElementById('succOv');
@@ -1060,20 +1105,30 @@ function showSuccess(title,sub,onDone){
   document.getElementById('succSub').textContent=sub;
   ov.classList.add('show');
   setTimeout(()=>{document.getElementById('succFill').style.width='100%';},200);
-  setTimeout(()=>{ov.style.opacity='0';setTimeout(()=>{ov.classList.remove('show');ov.style.opacity='';document.getElementById('succFill').style.width='0';if(onDone)onDone();},500);},2600);
+  setTimeout(()=>{
+    ov.style.opacity='0';
+    setTimeout(()=>{
+      ov.classList.remove('show');
+      ov.style.opacity='';
+      document.getElementById('succFill').style.width='0';
+      if(onDone)onDone();
+    },500);
+  },2600);
 }
 window.showSuccess=showSuccess;
 
-let dashEntered=false;
+/* FIX: _enterDash is now idempotent — guarded by authFlowState in the module,
+   but also safe to call multiple times here since we check display state */
 window._enterDash=function(name,email){
-  if(dashEntered)return; // prevent double-fire from onAuthStateChanged
-  dashEntered=true;
+  // If dashboard is already showing, skip
+  if(document.getElementById('dashScreen').classList.contains('active')) return;
+
   currentUser={name,email};
   document.getElementById('userNameNav').textContent=name;
   document.getElementById('userAv').textContent=name[0].toUpperCase();
   const auth2=document.getElementById('authScreen');
   const dash=document.getElementById('dashScreen');
-  const title=email?`Welcome back, ${name}! 🌾`:`Welcome, ${name}! 🌱`;
+  const title=`Welcome, ${name}! 🌾`;
   showSuccess(title,'Loading your dashboard…',()=>{
     auth2.style.display='none';auth2.classList.remove('active');
     dash.classList.add('active','screen-enter');
@@ -1086,19 +1141,37 @@ window._enterDash=function(name,email){
   });
 };
 
+/* FIX: Logout fully resets UI and clears dashboard state */
 function handleLogout(){
-  dashEntered=false;
   const dash=document.getElementById('dashScreen');
   const auth2=document.getElementById('authScreen');
-  window._firebaseLogout();
+
+  // FIX: Call logout (which sets authFlowState = 'loggingOut' before signOut)
+  waitForFn('_firebaseLogout', null, []);
+
+  // Reset UI immediately
   dash.classList.remove('active','screen-enter');
   dash.style.display='none';
-  auth2.style.display='flex';auth2.classList.add('active');
+  auth2.style.display='';
+  auth2.classList.add('active');
   document.getElementById('priceTicker').classList.remove('visible');
   if(panelOpen)togglePricePanel();
-  document.getElementById('result-section').classList.remove('visible');
-  document.getElementById('result-section').style.display='none';
+
+  // Reset result section
+  const rs=document.getElementById('result-section');
+  rs.classList.remove('visible');
+  rs.style.display='none';
+
+  // Reset login form
+  document.getElementById('lEmail').value='';
+  document.getElementById('lPwd').value='';
+  document.getElementById('loginBtn').classList.remove('loading');
+  document.getElementById('signupBtn').classList.remove('loading');
   hidePhonePanel();
+
+  // Switch back to login tab
+  switchAuthTab('login');
+
   toast('👋 Signed out successfully.');
   window.scrollTo(0,0);
 }
@@ -1208,7 +1281,7 @@ async function runPrediction(){
 }
 
 /* ════════════════════════════════════════
-   BURST & TOAST & REVEAL
+   BURST, TOAST & REVEAL
 ════════════════════════════════════════ */
 function burst(){const items=['🌾','🌱','🌿','✨','🍃','💫','🌻','⭐'];for(let i=0;i<28;i++){const el=document.createElement('div');el.className='f-elem';el.textContent=items[Math.floor(Math.random()*items.length)];el.style.cssText=`font-size:${16+Math.random()*24}px;left:${Math.random()*100}vw;bottom:0;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*1.2}s;position:absolute;`;gc.appendChild(el);setTimeout(()=>el.remove(),6000);}}
 function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
